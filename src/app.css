@@ -381,3 +381,13 @@ html.capture-window, html.capture-window body { background: transparent; }
 .trash-bar .ghost-btn { display: inline-flex; align-items: center; gap: 6px; }
 .ghost-btn.danger { background: #C42B1C; border-color: #C42B1C; color: #fff; }
 .trash-bar + .doc { padding-top: 24px; }
+
+/* ---- locked folder ---- */
+.lock-error { margin: -4px 0 14px; color: #C42B1C; font-size: 13px; }
+[data-theme="dark"] .lock-error { color: #FF8A80; }
+.lock-actions { display: flex; gap: 10px; align-items: center; }
+.lock-actions .ghost-btn { height: 40px; }
+.primary:disabled { opacity: 0.7; cursor: progress; }
+.lock-note-bar { display: flex; gap: 2px; }
+
+.set-form { padding: 14px 0; border-bottom: 1px solid var(--line); max-width: 420px; }

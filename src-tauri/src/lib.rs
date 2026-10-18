@@ -1,3 +1,5 @@
+mod vault;
+
 use serde::Serialize;
 use std::fs;
 use std::path::{Component, Path, PathBuf};
@@ -35,7 +37,12 @@ struct Front {
 
 /// Notes live as plain .md files in Documents\Envelo.
 fn root(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    let dir = app.path().document_dir().map_err(|e| e.to_string())?.join("Envelo");
+    // dev builds can point at a scratch folder so testing never touches real notes
+    let test_dir = cfg!(debug_assertions).then(|| std::env::var_os("ENVELO_NOTES_DIR")).flatten();
+    let dir = match test_dir {
+        Some(d) => PathBuf::from(d),
+        None => app.path().document_dir().map_err(|e| e.to_string())?.join("Envelo"),
+    };
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     Ok(dir)
 }
@@ -430,6 +437,90 @@ async fn fetch_title(url: String) -> Option<String> {
     .flatten()
 }
 
+// ---- locked folder (see vault.rs) ----
+
+/// Runs vault work that may hash a password off the UI thread.
+async fn blocking<T: Send + 'static>(
+    app: tauri::AppHandle,
+    f: impl FnOnce(&Path, &vault::Vault) -> Result<T, String> + Send + 'static,
+) -> Result<T, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let root = root(&app)?;
+        f(&root, &app.state::<vault::Vault>())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+fn vault_status(app: tauri::AppHandle, state: tauri::State<vault::Vault>) -> Result<vault::Status, String> {
+    vault::status(&root(&app)?, &state)
+}
+
+#[tauri::command]
+async fn vault_setup(app: tauri::AppHandle, password: String, question: String, answer: String) -> Result<(), String> {
+    blocking(app, move |r, v| vault::setup(r, v, &password, &question, &answer)).await
+}
+
+#[tauri::command]
+async fn vault_unlock(app: tauri::AppHandle, secret: String, by_answer: bool) -> Result<(), String> {
+    blocking(app, move |r, v| vault::unlock(r, v, &secret, by_answer)).await
+}
+
+#[tauri::command]
+fn vault_lock(state: tauri::State<vault::Vault>) {
+    vault::lock(&state);
+}
+
+#[tauri::command]
+async fn vault_set_password(app: tauri::AppHandle, password: String) -> Result<(), String> {
+    blocking(app, move |r, v| vault::set_password(r, v, &password)).await
+}
+
+#[tauri::command]
+async fn vault_set_question(app: tauri::AppHandle, question: String, answer: String) -> Result<(), String> {
+    blocking(app, move |r, v| vault::set_question(r, v, &question, &answer)).await
+}
+
+#[tauri::command]
+fn locked_list(app: tauri::AppHandle, state: tauri::State<vault::Vault>) -> Result<Vec<vault::LockedNote>, String> {
+    vault::list(&root(&app)?, &state)
+}
+
+#[tauri::command]
+fn locked_save(app: tauri::AppHandle, state: tauri::State<vault::Vault>, id: Option<String>, body: String, created: String) -> Result<vault::LockedNote, String> {
+    vault::save(&root(&app)?, &state, id, body, created)
+}
+
+#[tauri::command]
+fn locked_delete(app: tauri::AppHandle, state: tauri::State<vault::Vault>, id: String) -> Result<(), String> {
+    vault::delete(&root(&app)?, &state, &id)
+}
+
+/// Moves an ordinary note into the locked folder: encrypted first, then the plain file is removed.
+#[tauri::command]
+fn lock_note(app: tauri::AppHandle, state: tauri::State<vault::Vault>, path: String) -> Result<vault::LockedNote, String> {
+    let root = root(&app)?;
+    let src = inside(&root, &path)?;
+    let (front, body) = split(&fs::read_to_string(&src).map_err(|e| e.to_string())?);
+    let created = front.created.unwrap_or_else(|| chrono::Local::now().to_rfc3339());
+    let note = vault::save(&root, &state, None, body, created)?;
+    fs::remove_file(&src).map_err(|e| e.to_string())?;
+    Ok(note)
+}
+
+/// Moves a locked note back out as an ordinary note in the top level; returns its path.
+#[tauri::command]
+fn unlock_note(app: tauri::AppHandle, state: tauri::State<vault::Vault>, id: String) -> Result<String, String> {
+    let root = root(&app)?;
+    let note = vault::read(&root, &state, &id)?;
+    let target = unique(&root, &file_stem(&title_of(&note.body)));
+    let front = Front { created: Some(note.created), modified: Some(note.modified), pinned: false, folder: None };
+    write_atomic(&target, &join(&front, &note.body))?;
+    vault::delete(&root, &state, &id)?;
+    Ok(rel(&root, &target))
+}
+
 /// Set when Windows starts Envelo at sign-in: it waits in the tray instead of opening a window.
 static STARTED_HIDDEN: AtomicBool = AtomicBool::new(false);
 
@@ -500,6 +591,7 @@ fn tray(app: &tauri::App) -> tauri::Result<()> {
 pub fn run() {
     let capture_keys = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::Space);
     tauri::Builder::default()
+        .manage(vault::Vault::default())
         // a second launch (Start menu, taskbar) just brings the running Envelo forward
         .plugin(tauri_plugin_single_instance::init(|app, _, _| show_main(app)))
         .plugin(tauri_plugin_opener::init())
@@ -547,7 +639,9 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             list_notes, save_note, trash_note, notes_root, save_image, fetch_title, started_hidden, quit,
-            list_trash, restore_note, delete_forever, list_folders, create_folder, rename_folder, delete_folder, move_note
+            list_trash, restore_note, delete_forever, list_folders, create_folder, rename_folder, delete_folder, move_note,
+            vault_status, vault_setup, vault_unlock, vault_lock, vault_set_password, vault_set_question,
+            locked_list, locked_save, locked_delete, lock_note, unlock_note
         ])
         .run(tauri::generate_context!())
         .expect("error while running Envelo");

@@ -142,10 +142,10 @@ export function create(body = '') {
   return note;
 }
 
-export async function remove(note) {
+export async function remove(note, { skipTrash = false } = {}) {
   clearTimeout(timers.get(note.id));
   await note.queue;
-  if (note.path) await api.trash(note.path);
+  if (note.path && !skipTrash) await api.trash(note.path);
   const list = sorted(store.notes);
   const i = list.findIndex((n) => n.id === note.id);
   store.notes = store.notes.filter((n) => n.id !== note.id);

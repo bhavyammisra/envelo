@@ -115,15 +115,26 @@ highlighted. Index kept in memory, built at start-up from the files.
 
 ## Locked folder
 
-- First open: create a password, pick or write a security question, enter the answer.
-- One random key encrypts locked notes (AES-256-GCM). The key is stored twice, wrapped by a key
-  derived from the password and by one derived from the answer (Argon2id). Either unlocks.
-- Answers ignore case and extra spaces.
-- Forgot password: answer the question, then set a new password.
-- 5 wrong attempts: wait 1 minute.
-- Re-locks when the app closes or after 5 idle minutes.
-- Change password or question in settings after unlocking.
+- First open: create a password (6+ characters, typed twice), pick or write a security
+  question, enter the answer.
+- One random 32-byte key encrypts locked notes (AES-256-GCM). The key is stored twice in
+  `.locked/vault.json`, wrapped by keys derived from the password and from the answer
+  (Argon2id, 64 MiB, 3 passes). Either unlocks. Each locked note is `.locked/<random>.note`,
+  so titles are hidden too. While unlocked the key exists only in memory.
+- Answers ignore capitals and extra spaces.
+- Forgot password: answer the question, then a new password must be set before the notes show.
+- 5 wrong tries in a row: a 1 minute wait (kept across restarts).
+- Locks again after 5 minutes without use, with "Lock now", when the window is closed to the
+  tray, and on quit.
+- Moving in: "Locked folder" in a note's move menu encrypts it, then removes the plain file.
+  Moving out: the button on a locked note writes it back as an ordinary note.
+- Deleting a locked note is permanent (two clicks), because the ordinary trash isn't encrypted.
+- Pictures can't be added to locked notes (they're stored as ordinary files).
+- Settings: change the password or the security question while unlocked.
 - Forgetting both password and answer means those notes cannot be recovered.
+- Known limit: a note moved into Locked may still exist in older OneDrive version history or in
+  deleted-file recovery tools, because it was a plain file before. Notes written in Locked from
+  the start never touch the disk unencrypted.
 
 ## Look
 

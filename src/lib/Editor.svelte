@@ -22,7 +22,7 @@
   import { NoteImage, LinkCard, SlashMenu, TrailingParagraph } from './extensions.js';
   import { savePicture, isPicture, fetchTitle, openLink, hostOf } from './media.js';
 
-  let { note, onchange = () => {}, readonly = false } = $props();
+  let { note, onchange = () => {}, readonly = false, pictures = true, onnotice = () => {} } = $props();
 
   let host, bar, tableBar, picker;
   let editor = $state(null);
@@ -53,9 +53,11 @@
     { label: 'Divider', keys: 'hr line rule', icon: Minus, run: (c) => c.setHorizontalRule().run() },
     { label: 'Table', keys: 'grid', icon: TableIcon, run: (c) => c.insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run() },
     { label: 'Picture', keys: 'image photo screenshot', icon: ImageIcon, run: (c) => { c.run(); picker.click(); } },
-  ];
+  ].filter((i) => pictures || i.label !== 'Picture');
 
   async function addPictures(files, pos) {
+    // pictures are saved as ordinary files, so they'd leak out of an encrypted note
+    if (!pictures) return onnotice("Pictures aren't encrypted, so they can't go in locked notes.");
     for (const file of files) {
       try {
         const src = await savePicture(file);

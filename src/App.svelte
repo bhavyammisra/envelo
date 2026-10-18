@@ -5,8 +5,11 @@
   import { listen } from '@tauri-apps/api/event';
   import {
     Minus, Square, X, PanelLeft, SquarePen, Notebook, Settings as Gear, Search, Maximize2, Minimize2, Trash2,
-    Pin, PinOff, Folder, FolderInput, Plus, RotateCcw, Check,
+    Pin, PinOff, Folder, FolderInput, Plus, RotateCcw, Check, Lock, LockOpen, FolderOutput,
   } from 'lucide-svelte';
+  import Locked from './lib/Locked.svelte';
+  import * as V from './lib/vault.svelte.js';
+  const { vault } = V;
   import Editor from './lib/Editor.svelte';
   import Settings from './lib/Settings.svelte';
   import { initMedia } from './lib/media.js';
@@ -28,13 +31,17 @@
   let moveMenu = $state(false);
 
   const inTrash = $derived(store.view === 'trash');
+  const inLocked = $derived(store.view === 'locked');
+  const keyOf = (n) => (inLocked ? n.key : n.id);
+  let confirmLockedDelete = $state(false);
   const matches = (n, words) => words.every((w) => (n.title + '\n' + n.body).toLowerCase().includes(w));
   const items = $derived.by(() => {
-    if (!inTrash) return visible();
     const words = store.query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (inLocked) return vault.unlocked && !vault.resetting ? [...vault.notes].sort((a, b) => Date.parse(b.modified) - Date.parse(a.modified)).filter((n) => matches(n, words)) : [];
+    if (!inTrash) return visible();
     return store.trash.filter((t) => matches(t, words));
   });
-  const currentKey = $derived(inTrash ? store.trashId : store.currentId);
+  const currentKey = $derived(inLocked ? vault.currentId : inTrash ? store.trashId : store.currentId);
   const groups = $derived.by(() => {
     const out = [];
     const add = (name, n) => { if (out.at(-1)?.name !== name) out.push({ name, notes: [] }); out.at(-1).notes.push(n); };
@@ -45,6 +52,7 @@
   });
   const note = $derived(store.notes.find((n) => n.id === store.currentId) ?? null);
   const trashed = $derived(store.trash.find((t) => t.id === store.trashId) ?? null);
+  const locked = $derived(vault.notes.find((n) => n.key === vault.currentId) ?? null);
   const count = (folder) => store.notes.filter((n) => n.folder === folder).length;
   const saved = (n) => n.path || n.body.trim();
 
@@ -75,19 +83,23 @@
     moveMenu = false;
     confirmForever = false;
     store.view = view;
+    confirmLockedDelete = false;
     if (view === 'trash') await loadTrash();
+    else if (view === 'locked') await V.status();
     else if (!items.some((n) => n.id === store.currentId)) store.currentId = items[0]?.id ?? null;
   }
 
   function newNote() {
-    if (store.view === 'trash' || store.view === 'pinned') store.view = 'all';
+    if (inLocked && vault.unlocked) { page = 'notes'; store.query = ''; V.create(); return; }
+    if (store.view === 'trash' || store.view === 'pinned' || store.view === 'locked') store.view = 'all';
     page = 'notes';
     store.query = '';
     create();
   }
 
   function pick(n) {
-    if (inTrash) { store.trashId = n.id; confirmForever = false; }
+    if (inLocked) { V.select(n.key); confirmLockedDelete = false; }
+    else if (inTrash) { store.trashId = n.id; confirmForever = false; }
     else select(n.id);
   }
 
@@ -110,11 +122,11 @@
   }
 
   function listKey(e) {
-    if (e.key === 'Delete' && note && !inTrash) { e.preventDefault(); remove(note); }
+    if (e.key === 'Delete' && note && !inTrash && !inLocked) { e.preventDefault(); remove(note); }
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       const flat = groups.flatMap((g) => g.notes);
-      const i = flat.findIndex((n) => n.id === currentKey);
+      const i = flat.findIndex((n) => keyOf(n) === currentKey);
       const next = flat[Math.max(0, Math.min(flat.length - 1, i + (e.key === 'ArrowDown' ? 1 : -1)))];
       if (next) pick(next);
     }
@@ -122,10 +134,31 @@
 
   const focusInput = (el) => { el.focus(); el.select(); };
 
+  async function lockThis(n) {
+    moveMenu = false;
+    if (!vault.unlocked) return show('locked'); // unlock first, then move it
+    try {
+      await flush(n);
+      if (n.path) await V.moveIn(n.path);
+      await remove(n, { skipTrash: true });
+    } catch (e) { store.error = `Couldn't lock the note: ${e}`; }
+  }
+
+  async function moveOut(n) {
+    try { await V.moveOut(n); await refresh(); } catch (e) { store.error = `Couldn't move the note out: ${e}`; }
+  }
+
+  async function closeToTray() {
+    await flushAll();
+    if (vault.unlocked) await V.lock();
+    win?.close();
+  }
+
   onMount(async () => {
     try {
       await initMedia();
       await load();
+      await V.status();
     } catch (e) {
       store.error = `Couldn't open your notes folder: ${e}`;
     } finally {
@@ -137,7 +170,7 @@
     if (win) {
       listen('notes-changed', () => refresh());
       // Quit from the tray: save anything still pending, then exit
-      listen('quit-requested', async () => { await flushAll(); invoke('quit'); });
+      listen('quit-requested', async () => { await flushAll(); if (vault.unlocked) await V.lock(); invoke('quit'); });
     }
     addEventListener('beforeunload', () => store.notes.forEach(flush));
   });
@@ -160,7 +193,7 @@
     <div class="caption">
       <button aria-label="Minimise" onclick={() => win?.minimize()}><Minus {...icon} /></button>
       <button aria-label="Maximise" onclick={() => win?.toggleMaximize()}><Square size={14} strokeWidth={1.5} /></button>
-      <button class="close" aria-label="Close to tray" title="Close (Envelo keeps running in the tray)" onclick={() => flushAll().then(() => win?.close())}><X {...icon} /></button>
+      <button class="close" aria-label="Close to tray" title="Close (Envelo keeps running in the tray)" onclick={closeToTray}><X {...icon} /></button>
     </div>
   </div>
 
@@ -198,6 +231,10 @@
       {/if}
 
       <div class="side-head">Private</div>
+      <button class="nav" aria-current={page === 'notes' && inLocked} onclick={() => show('locked')}>
+        {#if vault.unlocked}<LockOpen {...icon} />{:else}<Lock {...icon} />{/if}Locked
+        {#if vault.unlocked}<span class="count">{vault.notes.filter((n) => n.id || n.body.trim()).length}</span>{/if}
+      </button>
       <button class="nav" aria-current={page === 'notes' && inTrash} onclick={() => show('trash')}><Trash2 {...icon} />Recently deleted</button>
       <div class="side-foot"><button class="nav" aria-current={page === 'settings'} onclick={() => (page = 'settings')}><Gear {...icon} />Settings</button></div>
     </nav>
@@ -212,9 +249,9 @@
           <div class="lens" aria-hidden="true" bind:this={lens}></div>
           {#each groups as g (g.name)}
             <div class="group">{g.name}</div>
-            {#each g.notes as n (n.id)}
-              <button class="row" role="option" aria-selected={n.id === currentKey} aria-current={n.id === currentKey} onclick={() => pick(n)}>
-                {#if n.id === currentKey}{#key n.id}<div class="topo" aria-hidden="true" style:--pos={patch(n)}></div>{/key}{/if}
+            {#each g.notes as n (keyOf(n))}
+              <button class="row" role="option" aria-selected={keyOf(n) === currentKey} aria-current={keyOf(n) === currentKey} onclick={() => pick(n)}>
+                {#if keyOf(n) === currentKey}{#key keyOf(n)}<div class="topo" aria-hidden="true" style:--pos={patch(n)}></div>{/key}{/if}
                 <div class="row-title">{#if n.pinned}<Pin size={13} strokeWidth={1.5} />{/if}{n.title || 'New note'}</div>
                 <div class="row-meta"><time>{timeOf(n.modified)}</time><span>{n.preview}</span></div>
               </button>
@@ -223,6 +260,7 @@
             <p class="empty">
               {#if store.query}No notes mention "{store.query}".
               {:else if inTrash}Deleted notes wait here for 30 days.
+              {:else if inLocked}{vault.unlocked ? 'Press Ctrl+N for a locked note, or move a note here.' : 'Unlock to see your locked notes.'}
               {:else if store.view === 'pinned'}Pin a note to keep it at the top.
               {:else if store.view.startsWith('folder:')}Press Ctrl+N to start a note in this folder.
               {:else}Press Ctrl+N to start a note.{/if}
@@ -232,7 +270,30 @@
       </section>
 
       <section class="editor" aria-label="Note">
-        {#if inTrash}
+        {#if inLocked}
+          {#if !vault.unlocked || vault.resetting}
+            <Locked />
+          {:else if locked}
+            <div class="editor-bar">
+              <button class="icon-btn" aria-label="Move out of Locked" title="Move out of Locked (to All notes)" onclick={() => moveOut(locked)}><FolderOutput {...icon} /></button>
+              <button class="icon-btn" aria-label="Focus mode (Ctrl+.)" title="Focus mode  Ctrl+." onclick={() => (focusMode = !focusMode)}>
+                {#if focusMode}<Minimize2 {...icon} />{:else}<Maximize2 {...icon} />{/if}
+              </button>
+              {#if confirmLockedDelete}
+                <button class="ghost-btn danger" onclick={() => { confirmLockedDelete = false; V.remove(locked); }}>Delete forever</button>
+              {:else}
+                <button class="icon-btn" aria-label="Delete locked note" title="Delete (locked notes can't go to Recently deleted)" onclick={() => (confirmLockedDelete = true)}><Trash2 {...icon} /></button>
+              {/if}
+              <button class="icon-btn" aria-label="Lock now" title="Lock now" onclick={() => V.lock()}><Lock {...icon} /></button>
+            </div>
+            <article class="doc">
+              <div class="stamp">{stampOf(locked)} · Locked</div>
+              <Editor note={locked} pictures={false} onchange={(md) => V.edit(locked, md)} onnotice={(m) => (store.error = m)} />
+            </article>
+          {:else}
+            <div class="doc-empty">Press Ctrl+N for a locked note.</div>
+          {/if}
+        {:else if inTrash}
           {#if trashed}
             <div class="trash-bar">
               <span>Deleted {stampOf({ created: trashed.deleted, modified: trashed.deleted })}. Removed for good in {daysLeft(trashed)} {daysLeft(trashed) === 1 ? 'day' : 'days'}.</span>
@@ -259,6 +320,7 @@
                     <button role="menuitem" onclick={() => { moveMenu = false; moveTo(note, f); }}>{#if note.folder === f}<Check size={14} strokeWidth={1.5} />{:else}<span class="ck"></span>{/if}{f}</button>
                   {/each}
                   <button role="menuitem" class="muted" onclick={() => { moveMenu = false; sidebar = true; naming = { from: null, value: '' }; }}><Plus size={14} strokeWidth={1.5} />New folder</button>
+                  {#if vault.exists}<button role="menuitem" class="muted" onclick={() => lockThis(note)}><Lock size={14} strokeWidth={1.5} />{vault.unlocked ? 'Locked folder' : 'Locked folder (unlock first)'}</button>{/if}
                 </div>
               {/if}
             </div>

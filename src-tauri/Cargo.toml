@@ -20,6 +20,12 @@ ureq = { version = "2", default-features = false, features = ["tls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+argon2 = "0.5"
+aes-gcm = "0.10"
+getrandom = "0.2"
+base64 = "0.22"
+zeroize = "1"
+hex = "0.4"
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-global-shortcut = "2"
 tauri-plugin-autostart = "2"
@@ -31,3 +37,10 @@ lto = true
 opt-level = "s"
 panic = "abort"
 strip = true
+
+# password hashing is very slow unoptimised; keep the dev app's unlock quick
+[profile.dev.package.argon2]
+opt-level = 3
+
+[profile.dev.package.blake2]
+opt-level = 3
