@@ -4,6 +4,7 @@
   import { Minus, Square, X, PanelLeft, SquarePen, Notebook, Settings as Gear, Search, Maximize2, Minimize2, Trash2 } from 'lucide-svelte';
   import Editor from './lib/Editor.svelte';
   import Settings from './lib/Settings.svelte';
+  import { initMedia } from './lib/media.js';
   import { store, load, visible, current, select, create, edit, remove, flush, groupOf, timeOf, stampOf } from './lib/notes.svelte.js';
 
   const win = '__TAURI_INTERNALS__' in window ? getCurrentWindow() : null;
@@ -75,6 +76,7 @@
 
   onMount(async () => {
     try {
+      await initMedia();
       await load();
     } catch (e) {
       store.error = `Couldn't open your notes folder: ${e}`;

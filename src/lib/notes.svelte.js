@@ -28,7 +28,7 @@ const api = inTauri
 export const titleOf = (body) =>
   body.split('\n').map((l) => l.replace(/^#+\s*/, '').trim()).find(Boolean) ?? '';
 
-const plain = (s) => s.replace(/<[^>]+>/g, '').replace(/[*_~`>#\[\]()!-]/g, '').replace(/\s+/g, ' ').trim();
+const plain = (s) => s.replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/<[^>]+>/g, '').replace(/\|/g, ' ').replace(/[*_~`>#\[\]()!-]/g, '').replace(/\s+/g, ' ').trim();
 const previewOf = (body) => {
   const lines = body.split('\n').map(plain).filter(Boolean);
   return lines.slice(1).join(' ').slice(0, 140);

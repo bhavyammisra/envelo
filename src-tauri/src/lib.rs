@@ -159,9 +159,65 @@ fn trash_note(app: tauri::AppHandle, path: String) -> Result<(), String> {
     fs::rename(&src, trash.join(name)).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn notes_root(app: tauri::AppHandle) -> Result<String, String> {
+    Ok(root(&app)?.to_string_lossy().into_owned())
+}
+
+/// Pasted or dropped pictures arrive as raw bytes (no JSON), with the extension in a header.
+#[tauri::command]
+fn save_image(app: tauri::AppHandle, request: tauri::ipc::Request) -> Result<String, String> {
+    let tauri::ipc::InvokeBody::Raw(bytes) = request.body() else { return Err("expected image bytes".into()) };
+    let ext = request.headers().get("x-ext").and_then(|v| v.to_str().ok()).unwrap_or("png").to_ascii_lowercase();
+    if !["png", "jpg", "jpeg", "gif", "webp"].contains(&ext.as_str()) {
+        return Err(format!("unsupported image type: {ext}"));
+    }
+    if bytes.len() > 40 * 1024 * 1024 {
+        return Err("image is larger than 40 MB".into());
+    }
+    let dir = root(&app)?.join("images");
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    let stamp = chrono::Local::now().format("%Y%m%d-%H%M%S-%3f");
+    let name = format!("{stamp}.{ext}");
+    fs::write(dir.join(&name), bytes).map_err(|e| e.to_string())?;
+    Ok(format!("images/{name}"))
+}
+
+fn page_title(html: &str) -> Option<String> {
+    let lower = html.to_ascii_lowercase();
+    let start = lower.find("<title")?;
+    let open = start + lower[start..].find('>')? + 1;
+    let close = open + lower[open..].find("</title")?;
+    let raw = html[open..close]
+        .replace("&amp;", "&").replace("&quot;", "\"").replace("&#39;", "'").replace("&#x27;", "'")
+        .replace("&lt;", "<").replace("&gt;", ">").replace("&nbsp;", " ");
+    let t: String = raw.split_whitespace().collect::<Vec<_>>().join(" ").chars().take(120).collect();
+    (!t.is_empty()).then_some(t)
+}
+
+/// Looks up a page title for a pasted link. Runs off the UI thread and never blocks typing; offline it just fails.
+#[tauri::command]
+async fn fetch_title(url: String) -> Option<String> {
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return None;
+    }
+    tauri::async_runtime::spawn_blocking(move || {
+        use std::io::Read;
+        let agent = ureq::AgentBuilder::new().timeout(std::time::Duration::from_secs(5)).redirects(5).build();
+        let res = agent.get(&url).set("User-Agent", "Envelo/0.1 (notes app)").call().ok()?;
+        let mut buf = String::new();
+        res.into_reader().take(256 * 1024).read_to_string(&mut buf).ok()?;
+        page_title(&buf)
+    })
+    .await
+    .ok()
+    .flatten()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         // the front end shows the window once the note is painted; this is the safety net if it can't
         .on_page_load(|webview, payload| {
             if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished) {
@@ -172,7 +228,7 @@ pub fn run() {
                 });
             }
         })
-        .invoke_handler(tauri::generate_handler![list_notes, save_note, trash_note])
+        .invoke_handler(tauri::generate_handler![list_notes, save_note, trash_note, notes_root, save_image, fetch_title])
         .run(tauri::generate_context!())
         .expect("error while running Envelo");
 }
@@ -195,6 +251,14 @@ mod tests {
         assert_eq!(title_of("\n\n## Website ideas\nmore"), "Website ideas");
         assert_eq!(file_stem("a/b: c?."), "ab c");
         assert_eq!(file_stem("   "), "Untitled");
+    }
+
+    #[test]
+    fn reads_page_titles() {
+        assert_eq!(page_title("<html><head><TITLE>
+ Luke &amp; Co
+</TITLE>").as_deref(), Some("Luke & Co"));
+        assert_eq!(page_title("<p>no title</p>"), None);
     }
 
     #[test]

@@ -52,11 +52,18 @@ Each note keeps created and edited times in a small front-matter block.
 - `/` menu: Heading 1, 2, 3, Text, Bullets, Numbers, Checklist, Quote, Divider, Table, Image.
 - Selecting text shows a small format bar: H1 H2 H3, bold, italic, underline, strikethrough,
   highlight (a few soft colours), link.
-- Tables: insert via `/table`; add or remove rows and columns from a small menu on the table.
-- Images: paste (Ctrl+V) or drag in. Full width with soft corners; click to view larger.
-  Images load only when scrolled into view.
-- Links: pasted URLs show as a neat line with the site name. Page title fetched in the
-  background when online; never blocks typing.
+- Tables: insert via `/table` (3 by 3 with a header row). While the cursor is in a table, a bar
+  above it offers Add row, Remove row, Add column, Remove column, Delete table. Saved as
+  Markdown tables.
+- Images: paste (Ctrl+V), drag in, or `/` Picture to pick files (PNG, JPG, GIF, WebP, up to 40 MB).
+  Saved to `images/` in the notes folder and written as `![](images/name.png)` on its own line.
+  Full width with soft corners; click to view larger, Esc or click to close. Loaded lazily.
+- Every note always ends with an empty line so you can type after a picture, table or card.
+- Links: a URL pasted on an empty line becomes a link card (site initial, page title, site name).
+  The title is fetched in the background when online (5 s timeout) and never blocks typing; cards
+  saved offline get their title the next time the note is opened online. Saved in the file as
+  `<div data-link-card="url">Title</div>`. Clicking a card, or Ctrl+clicking a text link, opens it
+  in the default browser. URLs pasted inside text stay normal links.
 - Note background per note: plain, warm paper, lined, grid, dotted.
 - Smart typography as you type: straight quotes become curly quotes, `->` becomes an arrow,
   `...` becomes an ellipsis, `1/2` becomes a fraction. Undo (Ctrl+Z) right after reverts it.
