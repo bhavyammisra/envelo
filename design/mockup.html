@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light" data-accent="gold" data-sel="topo">
+<html lang="en" data-theme="light" data-accent="gold" data-sel="liquid">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -261,22 +261,27 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
   .capture.saving, .saved.show, .app.focus .doc { animation-duration: 1ms; }
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; } }
 
-/* selected note, glass style: a frosted tile over a soft accent glow that glides to the selection */
+/* selected note, liquid glass: a clear lens that refracts the row beneath it and glides between notes */
 .list-scroll { position: relative; }
-.glow { display: none; position: absolute; left: 0; right: 0; top: 0; height: 160px; z-index: 0; pointer-events: none;
-  background: radial-gradient(60% 50% at 70% 50%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%),
-              radial-gradient(40% 40% at 20% 60%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
-  transform: translateY(var(--sel-y, 0px)); transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1); }
-[data-sel="glass"] .glow { display: block; }
-.list-scroll > :not(.glow) { position: relative; z-index: 1; }
-[data-sel="glass"] .topo { display: none; }
-[data-sel="glass"] .row[aria-current="true"] {
-  background: rgb(255 255 255 / 52%); -webkit-backdrop-filter: blur(16px) saturate(1.5); backdrop-filter: blur(16px) saturate(1.5);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 75%), inset 0 1px 0 rgb(255 255 255 / 90%), 0 8px 24px -10px rgb(60 48 30 / 30%); }
-[data-theme="dark"][data-sel="glass"] .row[aria-current="true"] {
-  background: rgb(255 255 255 / 7%);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 11%), inset 0 1px 0 rgb(255 255 255 / 16%), 0 10px 28px -12px rgb(0 0 0 / 80%); }
-@media (prefers-reduced-motion: reduce) { .glow { transition: none; } }
+.lens { display: none; position: absolute; left: 8px; right: 8px; top: 0; height: var(--sel-h, 60px); z-index: 2; pointer-events: none;
+  border-radius: 14px; transform: translateY(var(--sel-y, 0px));
+  transition: transform 560ms cubic-bezier(0.34, 1.32, 0.64, 1), height 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-backdrop-filter: url(#liquid) saturate(1.4) brightness(1.04); backdrop-filter: url(#liquid) saturate(1.4) brightness(1.04);
+  background: rgb(255 255 255 / 10%);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 60%), inset 1.5px 1.5px 0.5px -0.5px rgb(255 255 255 / 95%),
+    inset -1.5px -1.5px 0.5px -0.5px rgb(255 255 255 / 45%), inset 0 0 16px rgb(255 255 255 / 22%),
+    0 10px 24px -12px rgb(40 30 15 / 32%), 0 1px 3px rgb(40 30 15 / 12%); }
+.lens::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(180deg, rgb(255 255 255 / 14%), transparent 40%); }
+[data-theme="dark"] .lens { background: rgb(255 255 255 / 4%);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 24%), inset 1.5px 1.5px 0.5px -0.5px rgb(255 255 255 / 60%),
+    inset -1.5px -1.5px 0.5px -0.5px rgb(255 255 255 / 20%), inset 0 0 16px rgb(255 255 255 / 6%),
+    0 12px 28px -12px rgb(0 0 0 / 70%), 0 1px 3px rgb(0 0 0 / 40%); }
+[data-theme="dark"] .lens::before { background: linear-gradient(180deg, rgb(255 255 255 / 9%), transparent 42%); }
+[data-sel="liquid"] .lens { display: block; }
+[data-sel="liquid"] .topo { display: none; }
+[data-sel="liquid"] .row[aria-current="true"] { background: transparent; box-shadow: none; }
+.list-scroll > .row, .list-scroll > .group { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .lens { transition: none; } }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
@@ -292,12 +297,17 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
     <path d="M15 22.5 32 36l17-13.5" fill="none" stroke="#26231E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M15 22.5V44a3 3 0 0 0 3 3h28a3 3 0 0 0 3-3V30" fill="none" stroke="#26231E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
+  <filter id="liquid" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="300" height="64" color-interpolation-filters="sRGB">
+    <feImage href="data:image/png;base64,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" x="0" y="0" width="300" height="64" preserveAspectRatio="none" result="map"/>
+    <feGaussianBlur in="SourceGraphic" stdDeviation="0.35" result="soft"/>
+    <feDisplacementMap in="soft" in2="map" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
 </svg>
 
 <div class="controls" role="toolbar" aria-label="Mockup controls">
   <div><span class="label">Theme</span><span class="seg" data-set="theme"><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
   <div><span class="label">Accent</span><span class="seg" data-set="accent"><button aria-pressed="false" data-v="ink">Ink blue</button><button aria-pressed="false" data-v="terracotta">Terracotta</button><button aria-pressed="false" data-v="moss">Moss</button><button aria-pressed="true" data-v="gold">Gold</button></span></div>
-  <div><span class="label">Selected note</span><span class="seg" data-set="sel"><button aria-pressed="true" data-v="topo">Contour lines</button><button aria-pressed="false" data-v="glass">Glass</button></span></div>
+  <div><span class="label">Selected note</span><span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button></span></div>
   <span class="note-mock">Mockup only. Notes, names and counts are sample content.</span>
 </div>
 
@@ -331,7 +341,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
             <label class="search"><i data-lucide="search"></i><input placeholder="Search notes" aria-label="Search notes"><kbd>Ctrl K</kbd></label>
             <button class="icon-btn" aria-label="Card view"><i data-lucide="layout-grid"></i></button>
           </div>
-          <div class="list-scroll"><div class="glow" aria-hidden="true"></div>
+          <div class="list-scroll"><div class="lens" aria-hidden="true"></div>
             <div class="group">Pinned</div>
             <button class="row" aria-current="true"><div class="row-title"><i data-lucide="pin"></i>Website ideas</div><div class="row-meta"><time>16:45</time><span>Sites and details worth keeping for the portfolio</span></div></button>
             <div class="group">Today</div>
@@ -492,7 +502,7 @@ the scroll is so calm, look at how the headings arrive</textarea>
             <div class="set-row"><div><div class="t">Theme</div><div class="d">System follows your Windows setting.</div></div>
               <span class="seg" data-set="theme"><button aria-pressed="false" data-v="system">System</button><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
             <div class="set-row"><div><div class="t">Selected note style</div><div class="d">How the open note stands out in the list.</div></div>
-              <span class="seg" data-set="sel"><button aria-pressed="true" data-v="topo">Contour lines</button><button aria-pressed="false" data-v="glass">Glass</button></span></div>
+              <span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button></span></div>
             <div class="set-row"><div><div class="t">Accent colour</div><div class="d">Used for checkboxes, buttons and highlights.</div></div>
               <div class="swatches" data-set="accent">
                 <button class="swatch" aria-pressed="false" data-v="ink"><i class="sw-ink"></i>Ink blue</button>
@@ -530,7 +540,10 @@ the scroll is so calm, look at how the headings arrive</textarea>
     row.prepend(box);
   };
   document.querySelectorAll('.list').forEach(list => {
-    const glide = row => { const g = list.querySelector('.glow'); if (g) g.style.setProperty('--sel-y', `${row.offsetTop + row.offsetHeight / 2 - 80}px`); };
+    const glide = row => { const l = list.querySelector('.lens'); if (l) { l.style.setProperty('--sel-y', `${row.offsetTop}px`); l.style.setProperty('--sel-h', `${row.offsetHeight}px`);
+      // the refraction map has to match the lens size in pixels
+      const f = document.getElementById('liquid'), w = row.offsetWidth, h = row.offsetHeight;
+      [f, f.querySelector('feImage')].forEach(n => { n.setAttribute('width', w); n.setAttribute('height', h); }); } };
     const cur = list.querySelector('.row[aria-current="true"]'); if (cur) { topo(cur); glide(cur); }
     list.addEventListener('click', e => {
       const row = e.target.closest('.row'); if (!row || row.getAttribute('aria-current') === 'true') return;

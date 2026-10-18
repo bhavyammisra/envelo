@@ -105,19 +105,22 @@ confirmation shows briefly.
 - Accent colour chosen in Settings: Gold (default, like Apple Notes), Ink blue, Terracotta or
   Moss. Each has a light and a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
-- Selected note signature: a faint topographic contour map behind its tile in the list (one
+- Contour lines style: a faint topographic contour map behind its tile in the list (one
   small static SVG, tinted with the text colour, faded at the left edge). Each note shows a
   different patch of the map. It settles in once (about 0.7 s) when the note is selected, then
   stays still. With Windows "reduce animations" on, it appears without motion.
-- Alternative selected note style, Glass: the tile becomes frosted glass (backdrop blur on that
-  one tile only) over a soft accent glow that glides to the selected note in about 0.4 s.
-  Chosen in Settings under "Selected note style": Contour lines (default) or Glass.
+- Default selected note style, Liquid glass (in the spirit of Apple's Liquid Glass): a clear,
+  untinted glass lens floats over the selected note. Its rounded edges refract the text beneath
+  (SVG displacement map, `design/lens-map.png`), with a bright rim highlight and a soft shadow.
+  Clicking another note glides the lens there with a slight springy settle (about 0.55 s).
+  Only this one small element uses a backdrop filter.
+- Settings, "Selected note style": Liquid glass (default) or Contour lines.
 - Theme switch cross-fades in about 0.2 s (one GPU snapshot, no per-element transitions).
 - App icon: a sealed envelope on warm paper with a folded top-right corner (see mockup).
 
 ## Settings
 
-- Appearance: theme, selected note style (Contour lines or Glass), accent colour, default
+- Appearance: theme, selected note style (Liquid glass or Contour lines), accent colour, default
   background for new notes.
 - Notes: notes folder location, quick capture shortcut, start with Windows (tray).
 - Locked folder: change password and security question (after unlocking), lock after idle time.
