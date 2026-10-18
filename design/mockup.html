@@ -34,8 +34,6 @@
 [data-theme="dark"][data-accent="terracotta"] { --accent: #EE8B66; --accent-ink: #2E0E03; --accent-soft: rgb(238 139 102 / 28%); }
 [data-theme="dark"][data-accent="moss"] { --accent: #AFCB6E; --accent-ink: #172204; --accent-soft: rgb(175 203 110 / 28%); }
 [data-theme="dark"][data-accent="gold"] { --accent: #E3B23C; --accent-ink: #1F1600; --accent-soft: rgb(227 178 60 / 30%); }
-[data-theme="dark"] .row[aria-current="true"] { background: var(--accent); box-shadow: none; }
-[data-theme="dark"] .row[aria-current="true"] .row-title, [data-theme="dark"] .row[aria-current="true"] .row-title svg, [data-theme="dark"] .row[aria-current="true"] .row-meta, [data-theme="dark"] .row[aria-current="true"] .row-meta time { color: var(--accent-ink); }
 [data-theme="dark"] .nav svg { color: var(--accent); }
 
 * { box-sizing: border-box; }
@@ -433,6 +431,8 @@ the scroll is so calm, look at how the headings arrive</textarea>
     root.dataset[key] = v === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v;
     document.querySelectorAll(`[data-set="${key}"] button`).forEach(x => x.setAttribute('aria-pressed', x.dataset.v === v));
   };
+  const q = new URLSearchParams(location.search);
+  ['theme', 'accent'].forEach(k => q.get(k) && apply(k, q.get(k)));
   document.querySelectorAll('[data-set]').forEach(group => {
     group.addEventListener('click', e => {
       const b = e.target.closest('button'); if (b) apply(group.dataset.set, b.dataset.v);

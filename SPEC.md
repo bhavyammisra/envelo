@@ -91,8 +91,8 @@ keeps running in the tray so this is instant.
 - Light and dark mode, following Windows with a manual override (System, Light, Dark).
 - Light: warm paper throughout.
 - Dark: Apple Notes colours. Grey sidebar (#1E1E1E), darker notes list (#161616), pure black
-  note, white text, grey secondary text. In dark mode the selected note is filled with the
-  accent and sidebar icons take the accent colour.
+  note, white text, grey secondary text. The selected note gets the normal soft highlight (not
+  filled with the accent); sidebar icons take the accent colour.
 - Accent colour chosen in Settings: Gold (default, like Apple Notes), Ink blue, Terracotta or
   Moss. Each has a light and a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
