@@ -352,3 +352,32 @@ html.capture-window, html.capture-window body { background: transparent; }
 .toggle[aria-checked="false"] { background: var(--line); }
 .toggle[aria-checked="false"]::after { right: auto; left: 3px; background: var(--ink-2); }
 .toggle::after { transition: left 160ms cubic-bezier(0.22, 1, 0.36, 1), right 160ms cubic-bezier(0.22, 1, 0.36, 1); }
+
+/* ---- pins, folders, recently deleted ---- */
+.row-title svg { flex: none; }
+.folder-row { position: relative; display: flex; align-items: center; }
+.folder-row .nav { flex: 1; min-width: 0; }
+.folder-row .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.folder-x { position: absolute; right: 6px; height: 24px; min-width: 24px; padding: 0 6px; border-radius: 6px; display: grid; place-items: center;
+  color: var(--ink-2); font-size: 12px; opacity: 0; }
+.folder-row:hover .folder-x, .folder-x:focus-visible, .folder-x.confirm { opacity: 1; }
+.folder-row:hover .count { visibility: hidden; }
+.folder-x:hover { background: var(--hover); color: var(--ink); }
+.folder-x.confirm { background: #C42B1C; color: #fff; font-weight: 500; }
+.nav-input { margin: 2px 4px; height: 32px; padding: 0 10px; border-radius: 7px; border: 1px solid var(--accent); background: var(--field);
+  color: var(--ink); font: inherit; font-size: 14px; outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.move { position: relative; }
+.menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 200px; padding: 5px; border-radius: 10px;
+  background: var(--paper); border: 1px solid var(--line); box-shadow: var(--rim), var(--shadow); }
+.menu button { display: flex; width: 100%; align-items: center; gap: 9px; padding: 7px 9px; border-radius: 7px; font-size: 14px; color: var(--ink); text-align: left; }
+.menu button:hover { background: var(--hover); }
+.menu button svg { color: var(--accent); }
+.menu .ck { width: 14px; flex: none; }
+.menu .muted, .menu .muted svg { color: var(--ink-2); }
+.editor-bar .icon-btn[aria-pressed="true"] { color: var(--accent); }
+.trash-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--paper);
+  border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.trash-bar span { margin-right: auto; }
+.trash-bar .ghost-btn { display: inline-flex; align-items: center; gap: 6px; }
+.ghost-btn.danger { background: #C42B1C; border-color: #C42B1C; color: #fff; }
+.trash-bar + .doc { padding-top: 24px; }

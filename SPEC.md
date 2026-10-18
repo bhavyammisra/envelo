@@ -100,9 +100,18 @@ highlighted. Index kept in memory, built at start-up from the files.
 
 ## Organising
 
-- Pin notes to the top.
-- Optional folders: create, rename, delete; move notes into them. Off until first used.
-- Delete moves to Recently deleted; restore any time within 30 days, then removed for good.
+- Pin: the pin button on a note keeps it at the top of All notes under "Pinned", and in the Pinned
+  view. Saved as `pinned: true` in the note's front matter; pinning doesn't change the note's date.
+- Folders: real folders inside the notes folder (one level). Sidebar: "New" creates one
+  (type a name, Enter); double-click renames; the x (then Remove) removes it and moves its notes
+  back to All notes, so nothing is lost. Folder names can't be "images" or start with a dot.
+- Moving: the folder button on a note opens a menu: No folder, each folder, New folder.
+- A note made while a folder is open is created in that folder.
+- Delete moves a note to Recently deleted (`.trash`), remembering its folder.
+- Recently deleted: lists deleted notes newest first, read-only, with when it was deleted and how
+  many days are left. Restore puts it back in its folder (recreating the folder if needed).
+  "Delete now" then "Delete forever" removes it for good. Notes older than 30 days are removed
+  when Envelo starts.
 
 ## Locked folder
 

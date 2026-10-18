@@ -22,7 +22,7 @@
   import { NoteImage, LinkCard, SlashMenu, TrailingParagraph } from './extensions.js';
   import { savePicture, isPicture, fetchTitle, openLink, hostOf } from './media.js';
 
-  let { note, onchange } = $props();
+  let { note, onchange = () => {}, readonly = false } = $props();
 
   let host, bar, tableBar, picker;
   let editor = $state(null);
@@ -136,6 +136,7 @@
           return false;
         },
       },
+      editable: !readonly,
       content: note?.body ?? '',
       onUpdate: ({ editor }) => {
         const md = editor.storage.markdown.getMarkdown();
@@ -146,7 +147,7 @@
     });
     shownId = note?.id;
     refreshCards();
-    if (!note?.body) editor.commands.focus();
+    if (!note?.body && !readonly) editor.commands.focus();
   });
 
   onDestroy(() => editor?.destroy());
@@ -158,7 +159,7 @@
     shownId = n.id;
     slash = null;
     editor.commands.setContent(n.body, false);
-    editor.commands.focus(n.body ? 'start' : null);
+    if (!readonly) editor.commands.focus(n.body ? 'start' : null);
     refreshCards();
   });
 
