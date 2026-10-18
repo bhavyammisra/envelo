@@ -109,12 +109,16 @@ confirmation shows briefly.
   small static SVG, tinted with the text colour, faded at the left edge). Each note shows a
   different patch of the map. It settles in once (about 0.7 s) when the note is selected, then
   stays still. With Windows "reduce animations" on, it appears without motion.
+- Alternative selected note style, Glass: the tile becomes frosted glass (backdrop blur on that
+  one tile only) over a soft accent glow that glides to the selected note in about 0.4 s.
+  Chosen in Settings under "Selected note style": Contour lines (default) or Glass.
 - Theme switch cross-fades in about 0.2 s (one GPU snapshot, no per-element transitions).
 - App icon: a sealed envelope on warm paper with a folded top-right corner (see mockup).
 
 ## Settings
 
-- Appearance: theme, accent colour, default background for new notes.
+- Appearance: theme, selected note style (Contour lines or Glass), accent colour, default
+  background for new notes.
 - Notes: notes folder location, quick capture shortcut, start with Windows (tray).
 - Locked folder: change password and security question (after unlocking), lock after idle time.
 
