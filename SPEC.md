@@ -41,6 +41,8 @@ Each note keeps created and edited times in a small front-matter block.
   days, then by month. Each row: title, date or time, first line of text. List view or card view.
 - Editor: created and edited date at top, then the note. Comfortable reading width, centred.
 - Window remembers its size, position and last open note.
+- No splash screen: the window is shown only once the last open note is painted, so it opens
+  straight onto your note.
 
 ## Writing
 
@@ -56,6 +58,11 @@ Each note keeps created and edited times in a small front-matter block.
 - Links: pasted URLs show as a neat line with the site name. Page title fetched in the
   background when online; never blocks typing.
 - Note background per note: plain, warm paper, lined, grid, dotted.
+- Smart typography as you type: straight quotes become curly quotes, `->` becomes an arrow,
+  `...` becomes an ellipsis, `1/2` becomes a fraction. Undo (Ctrl+Z) right after reverts it.
+  Off inside code. Numbers use tabular figures so they line up.
+- Focus mode (Ctrl+.): hides the sidebar and notes list and widens the page; Esc or Ctrl+.
+  leaves it.
 
 ## Search
 
@@ -67,6 +74,8 @@ highlighted. Index kept in memory, built at start-up from the files.
 Ctrl+Shift+Space from anywhere in Windows opens a small box over the current app. Type or paste
 a thought or link, Enter saves it as a new note, Shift+Enter adds a line, Esc closes. Envelo
 keeps running in the tray so this is instant.
+On Enter the box folds up and away like a letter (about 0.35 s) and a small "Saved to Envelo"
+confirmation shows briefly.
 
 ## Organising
 
@@ -96,9 +105,12 @@ keeps running in the tray so this is instant.
 - Accent colour chosen in Settings: Gold (default, like Apple Notes), Ink blue, Terracotta or
   Moss. Each has a light and a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
-- Selected note signature: the note's own words, set tiny, italic and very faint in lines behind
-  its tile in the list. They slide in once (about half a second) when the note is selected, then
-  stay still. Off when Windows "reduce animations" is on (lines shown without motion).
+- Selected note signature: a faint topographic contour map behind its tile in the list (one
+  small static SVG, tinted with the text colour, faded at the left edge). Each note shows a
+  different patch of the map. It settles in once (about 0.7 s) when the note is selected, then
+  stays still. With Windows "reduce animations" on, it appears without motion.
+- Theme switch cross-fades in about 0.2 s (one GPU snapshot, no per-element transitions).
+- App icon: a sealed envelope on warm paper with a folded top-right corner (see mockup).
 
 ## Settings
 
@@ -117,6 +129,7 @@ keeps running in the tray so this is instant.
 | Ctrl+1 / 2 / 3 | Heading 1 / 2 / 3 |
 | Ctrl+0 | Body text |
 | Ctrl+\\ | Toggle sidebar |
+| Ctrl+. | Focus mode |
 | Delete (in list) | Move to Recently deleted |
 
 ## Performance budget

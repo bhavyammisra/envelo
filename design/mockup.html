@@ -213,18 +213,53 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 [data-theme="dark"] .primary { box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%); }
 [data-theme="dark"] .window { border-color: rgb(255 255 255 / 9%); }
 
-/* selected note: its own words, set in faint lines behind the tile */
+/* selected note: a topographic contour map behind the tile, faded in once */
 .row { position: relative; overflow: hidden; isolation: isolate; }
-.row > :not(.words) { position: relative; z-index: 1; }
-.words { position: absolute; inset: 0; z-index: 0; pointer-events: none; display: grid; align-content: center; gap: 1px;
-  font: italic 400 12px/1.3 var(--serif); color: var(--ink); opacity: 0.06; white-space: nowrap;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 35%, #000 80%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 35%, #000 80%, transparent); }
-[data-theme="dark"] .words { opacity: 0.09; }
-.words span { display: block; transform: translateX(var(--from)); opacity: 0;
-  animation: words-in 560ms cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i) * 45ms); }
-@keyframes words-in { to { transform: translateX(var(--to)); opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .words span { animation: none; transform: translateX(var(--to)); opacity: 1; } }
+.row > :not(.topo) { position: relative; z-index: 1; }
+.topo { position: absolute; inset: -12px; z-index: 0; pointer-events: none; background: var(--ink); opacity: 0;
+  -webkit-mask: url(contours.svg) var(--pos) / 640px 240px repeat, linear-gradient(90deg, transparent 5%, #000 45%);
+  -webkit-mask-composite: source-in;
+          mask: url(contours.svg) var(--pos) / 640px 240px repeat, linear-gradient(90deg, transparent 5%, #000 45%);
+          mask-composite: intersect;
+  transform: translate3d(8px, 4px, 0) scale(1.06);
+  animation: topo-in 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes topo-in { to { opacity: var(--topo, 0.22); transform: none; } }
+[data-theme="dark"] .topo { --topo: 0.26; }
+@media (prefers-reduced-motion: reduce) { .topo { animation: none; opacity: var(--topo, 0.22); transform: none; } }
+
+/* app icon */
+.app-ico { width: 18px; height: 18px; margin-right: 8px; flex: none; }
+.icons { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.icons > div { flex: 1; display: flex; align-items: end; justify-content: center; gap: 28px; padding: 36px 24px 28px; }
+.icons .on-light { background: #EDE6DA; } .icons .on-dark { background: #1E1E1E; }
+.icons figure { margin: 0; display: grid; justify-items: center; gap: 10px; }
+.icons figcaption { margin: 0; font-size: 12px; color: #5A544A; } .icons .on-dark figcaption { color: #9E9EA3; }
+
+/* quick capture saves by folding up like a letter */
+.capture.saving { animation: fold 340ms cubic-bezier(0.55, 0, 0.75, 0.3) forwards; }
+@keyframes fold {
+  55% { clip-path: inset(0 0 52% 0 round 12px); transform: translateY(-4px) scale(0.98); opacity: 1; }
+  100% { clip-path: inset(0 0 100% 0 round 12px); transform: translateY(-22px) scale(0.94); opacity: 0; } }
+.saved { position: absolute; display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 9px; background: var(--paper);
+  border: 1px solid var(--line); box-shadow: var(--rim), var(--shadow); font-size: 13px; opacity: 0; transform: translateY(6px); pointer-events: none; }
+.saved svg { color: var(--accent); }
+.saved.show { animation: saved 1100ms cubic-bezier(0.22, 1, 0.36, 1) 260ms forwards; }
+@keyframes saved { 15%, 75% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
+.frame-row { width: min(1240px, 100%); display: flex; justify-content: space-between; align-items: center; margin: 0 0 12px; }
+.frame-row .frame-title { margin: 0; }
+.frame-row .ghost-btn { white-space: nowrap; }
+
+/* focus mode */
+.app.focus { grid-template-columns: 0 0 minmax(0, 1fr) !important; }
+.app.focus > .sidebar, .app.focus > .list { visibility: hidden; border: 0; }
+.app.focus .doc { max-width: 760px; padding-top: 32px; animation: doc-in 260ms cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes doc-in { from { opacity: 0.4; transform: translateY(6px); } }
+
+/* theme switch cross-fades as one GPU snapshot */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 220ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .capture.saving, .saved.show, .app.focus .doc { animation-duration: 1ms; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; } }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
@@ -232,6 +267,15 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="envelo-icon" viewBox="0 0 64 64">
+    <rect x="3" y="3" width="58" height="58" rx="15" fill="#F3ECDF"/>
+    <rect x="3.5" y="3.5" width="57" height="57" rx="14.5" fill="none" stroke="#000" stroke-opacity=".14"/>
+    <path d="M44 3h2.5A14.5 14.5 0 0 1 61 17.5V20H48a4 4 0 0 1-4-4z" fill="#DCCFB6"/>
+    <path d="M15 22.5 32 36l17-13.5" fill="none" stroke="#26231E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M15 22.5V44a3 3 0 0 0 3 3h28a3 3 0 0 0 3-3V30" fill="none" stroke="#26231E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+</svg>
 
 <div class="controls" role="toolbar" aria-label="Mockup controls">
   <div><span class="label">Theme</span><span class="seg" data-set="theme"><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
@@ -244,7 +288,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
     <p class="frame-title">Main window, text selected</p>
     <div class="window">
       <div class="titlebar">
-        <span class="name">Envelo</span>
+        <svg class="app-ico" aria-hidden="true"><use href="#envelo-icon"/></svg><span class="name">Envelo</span>
         <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
       </div>
       <div class="app">
@@ -287,6 +331,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 
         <section class="editor" aria-label="Note">
           <div class="editor-bar">
+            <button class="icon-btn" aria-label="Focus mode (Ctrl+.)" title="Focus mode  Ctrl+." data-focus><i data-lucide="maximize-2"></i></button>
             <button class="icon-btn" aria-label="Pin note"><i data-lucide="pin"></i></button>
             <button class="icon-btn" aria-label="Note background"><i data-lucide="file-text"></i></button>
             <button class="icon-btn" aria-label="More"><i data-lucide="ellipsis"></i></button>
@@ -328,7 +373,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
   </section>
 
   <section>
-    <p class="frame-title">Quick capture, Ctrl+Shift+Space over any app</p>
+    <div class="frame-row"><p class="frame-title">Quick capture, Ctrl+Shift+Space over any app</p><button class="ghost-btn" data-replay>Press Enter (replay save)</button></div>
     <div class="desk">
       <div class="ghost"></div>
       <div class="capture" role="dialog" aria-label="Quick note">
@@ -337,6 +382,23 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 the scroll is so calm, look at how the headings arrive</textarea>
         <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Esc</kbd>Close</span></div>
       </div>
+      <div class="saved" role="status"><i data-lucide="check"></i>Saved to Envelo</div>
+    </div>
+  </section>
+
+  <section>
+    <p class="frame-title">App icon, a sealed envelope with a folded corner</p>
+    <div class="icons">
+      <div class="on-light">
+        <figure><svg width="96" height="96"><use href="#envelo-icon"/></svg><figcaption>Start menu</figcaption></figure>
+        <figure><svg width="48" height="48"><use href="#envelo-icon"/></svg><figcaption>Taskbar</figcaption></figure>
+        <figure><svg width="24" height="24"><use href="#envelo-icon"/></svg><figcaption>Tray</figcaption></figure>
+      </div>
+      <div class="on-dark">
+        <figure><svg width="96" height="96"><use href="#envelo-icon"/></svg><figcaption>Start menu</figcaption></figure>
+        <figure><svg width="48" height="48"><use href="#envelo-icon"/></svg><figcaption>Taskbar</figcaption></figure>
+        <figure><svg width="24" height="24"><use href="#envelo-icon"/></svg><figcaption>Tray</figcaption></figure>
+      </div>
     </div>
   </section>
 
@@ -344,7 +406,7 @@ the scroll is so calm, look at how the headings arrive</textarea>
     <p class="frame-title">Locked folder, first time</p>
     <div class="window">
       <div class="titlebar">
-        <span class="name">Envelo</span>
+        <svg class="app-ico" aria-hidden="true"><use href="#envelo-icon"/></svg><span class="name">Envelo</span>
         <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
       </div>
       <div class="app" style="grid-template-columns: 216px minmax(0, 1fr);">
@@ -386,7 +448,7 @@ the scroll is so calm, look at how the headings arrive</textarea>
     <p class="frame-title">Settings</p>
     <div class="window">
       <div class="titlebar">
-        <span class="name">Envelo</span>
+        <svg class="app-ico" aria-hidden="true"><use href="#envelo-icon"/></svg><span class="name">Envelo</span>
         <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
       </div>
       <div class="app" style="grid-template-columns: 216px minmax(0, 1fr);">
@@ -439,31 +501,40 @@ the scroll is so calm, look at how the headings arrive</textarea>
 
 <script>
   lucide.createIcons();
-  // selected note gets its own words as faint moving-in lines, once
-  const words = row => {
-    row.querySelector('.words')?.remove();
-    const text = (row.querySelector('.row-title').textContent + ' ' + row.querySelector('.row-meta span').textContent + ' ').repeat(4);
-    const box = document.createElement('div'); box.className = 'words'; box.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < 6; i++) {
-      const line = document.createElement('span'); const shift = (i % 2 ? -1 : 1) * 24;
-      line.style.setProperty('--i', i); line.style.setProperty('--from', `${-40 - i * 9 + shift}px`); line.style.setProperty('--to', `${-i * 9 - 20}px`);
-      line.textContent = text.slice(i * 11); box.append(line);
-    }
+  // selected note gets a contour map behind it; each note gets its own patch of the map
+  const topo = row => {
+    row.querySelector('.topo')?.remove();
+    let h = 0; for (const ch of row.querySelector('.row-title').textContent) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const box = document.createElement('div'); box.className = 'topo'; box.setAttribute('aria-hidden', 'true');
+    box.style.setProperty('--pos', `${-(h % 520)}px ${-((h >> 8) % 160)}px`);
     row.prepend(box);
   };
   document.querySelectorAll('.list').forEach(list => {
-    const cur = list.querySelector('.row[aria-current="true"]'); if (cur) words(cur);
+    const cur = list.querySelector('.row[aria-current="true"]'); if (cur) topo(cur);
     list.addEventListener('click', e => {
       const row = e.target.closest('.row'); if (!row || row.getAttribute('aria-current') === 'true') return;
-      list.querySelectorAll('.row').forEach(r => { r.removeAttribute('aria-current'); r.querySelector('.words')?.remove(); });
-      row.setAttribute('aria-current', 'true'); words(row);
+      list.querySelectorAll('.row').forEach(r => { r.removeAttribute('aria-current'); r.querySelector('.topo')?.remove(); });
+      row.setAttribute('aria-current', 'true'); topo(row);
     });
   });
   const root = document.documentElement;
-  const apply = (key, v) => {
+  const set = (key, v) => {
     root.dataset[key] = v === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v;
     document.querySelectorAll(`[data-set="${key}"] button`).forEach(x => x.setAttribute('aria-pressed', x.dataset.v === v));
   };
+  const apply = (key, v) => key === 'theme' && document.startViewTransition ? document.startViewTransition(() => set(key, v)) : set(key, v);
+  document.querySelectorAll('[data-focus]').forEach(b => b.addEventListener('click', () => b.closest('.app').classList.toggle('focus')));
+  addEventListener('keydown', e => {
+    const app = document.querySelector('[data-focus]').closest('.app');
+    if (e.ctrlKey && e.key === '.') app.classList.toggle('focus');
+    else if (e.key === 'Escape') app.classList.remove('focus');
+  });
+  document.querySelector('[data-replay]').addEventListener('click', () => {
+    const card = document.querySelector('.capture'), toast = document.querySelector('.saved');
+    card.classList.remove('saving'); toast.classList.remove('show'); void card.offsetWidth;
+    card.classList.add('saving'); toast.classList.add('show');
+    setTimeout(() => { card.classList.remove('saving'); toast.classList.remove('show'); }, 1700);
+  });
   const q = new URLSearchParams(location.search);
   ['theme', 'accent'].forEach(k => q.get(k) && apply(k, q.get(k)));
   document.querySelectorAll('[data-set]').forEach(group => {
