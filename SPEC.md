@@ -90,17 +90,16 @@ keeps running in the tray so this is instant.
 
 - Light and dark mode, following Windows with a manual override (System, Light, Dark).
 - Light: warm paper throughout.
-- Dark: a deep tinted shell (title bar, sidebar, notes list, search) with an even deeper note
-  area, ivory text, hairline borders made of light and a faint top highlight on raised surfaces.
-  Three dark styles chosen in Settings: Midnight (blue-black, default), Espresso (brown-black),
-  Forest (green-black).
-- Accent colour chosen in Settings: Ink blue (default), Terracotta, Moss or Brass. Each has a
-  light and a dark variant.
+- Dark: Apple Notes colours. Grey sidebar (#1E1E1E), darker notes list (#161616), pure black
+  note, white text, grey secondary text. In dark mode the selected note is filled with the
+  accent and sidebar icons take the accent colour.
+- Accent colour chosen in Settings: Gold (default, like Apple Notes), Ink blue, Terracotta or
+  Moss. Each has a light and a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
 
 ## Settings
 
-- Appearance: theme, dark style, accent colour, default background for new notes.
+- Appearance: theme, accent colour, default background for new notes.
 - Notes: notes folder location, quick capture shortcut, start with Windows (tray).
 - Locked folder: change password and security question (after unlocking), lock after idle time.
 

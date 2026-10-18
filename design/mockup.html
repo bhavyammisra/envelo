@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light" data-accent="ink" data-dark="midnight">
+<html lang="en" data-theme="light" data-accent="gold">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,30 +18,25 @@
 }
 [data-accent="terracotta"] { --accent: #A04E33; --accent-soft: #F1DDD3; }
 [data-accent="moss"] { --accent: #4F5F2E; --accent-soft: #E2E6D3; }
-[data-accent="brass"] { --accent: #85652A; --accent-soft: #EFE4CC; }
+[data-accent="gold"] { --accent: #8C6810; --accent-soft: #F3E6C4; }
 :root { --rim: none; }
 
-/* dark: midnight (default dark style) */
+/* dark: Apple Notes colours */
 [data-theme="dark"] {
-  --ground: #0F1422; --list: #0F1422; --paper: #070A12; --field: #171D2C; --desk: #1E2436;
-  --ink: #EEE7D8; --ink-2: #A4A8B1; --ink-3: #8C919B;
-  --line: rgb(255 255 255 / 7%); --hover: rgb(255 255 255 / 4%); --selected: rgb(255 255 255 / 8%);
-  --mark: #5C4714; --mark-ink: #FFEDB8;
-  --rim: inset 0 1px 0 rgb(255 255 255 / 6%);
+  --ground: #1E1E1E; --list: #161616; --paper: #000000; --field: #2A2A2B; --desk: #2C2C2E;
+  --ink: #F5F5F5; --ink-2: #9E9EA3; --ink-3: #8E8E93;
+  --line: rgb(255 255 255 / 9%); --hover: rgb(255 255 255 / 5%); --selected: #3A3A3C;
+  --mark: #5E4A12; --mark-ink: #FFEDB8;
+  --rim: inset 0 1px 0 rgb(255 255 255 / 5%);
   --shadow: 0 24px 48px -12px rgb(0 0 0 / 70%), 0 2px 8px rgb(0 0 0 / 40%);
   --accent: #86A8F5; --accent-ink: #0A1530; --accent-soft: rgb(134 168 245 / 28%);
 }
-[data-theme="dark"][data-dark="espresso"] {
-  --ground: #1B140F; --list: #1B140F; --paper: #0D0906; --field: #251C16; --desk: #2E241C;
-  --ink: #F1E8D9; --ink-2: #B0A390; --ink-3: #978A77; --line: rgb(255 236 210 / 8%); --hover: rgb(255 236 210 / 4%); --selected: rgb(255 236 210 / 8%);
-}
-[data-theme="dark"][data-dark="forest"] {
-  --ground: #0E1915; --list: #0E1915; --paper: #060D0A; --field: #15221D; --desk: #1C2A25;
-  --ink: #EBEEE5; --ink-2: #A0ABA3; --ink-3: #87938B; --line: rgb(226 255 240 / 7%); --hover: rgb(226 255 240 / 4%); --selected: rgb(226 255 240 / 8%);
-}
 [data-theme="dark"][data-accent="terracotta"] { --accent: #EE8B66; --accent-ink: #2E0E03; --accent-soft: rgb(238 139 102 / 28%); }
 [data-theme="dark"][data-accent="moss"] { --accent: #AFCB6E; --accent-ink: #172204; --accent-soft: rgb(175 203 110 / 28%); }
-[data-theme="dark"][data-accent="brass"] { --accent: #D8B46E; --accent-ink: #251803; --accent-soft: rgb(216 180 110 / 28%); }
+[data-theme="dark"][data-accent="gold"] { --accent: #E3B23C; --accent-ink: #1F1600; --accent-soft: rgb(227 178 60 / 30%); }
+[data-theme="dark"] .row[aria-current="true"] { background: var(--accent); box-shadow: none; }
+[data-theme="dark"] .row[aria-current="true"] .row-title, [data-theme="dark"] .row[aria-current="true"] .row-title svg, [data-theme="dark"] .row[aria-current="true"] .row-meta, [data-theme="dark"] .row[aria-current="true"] .row-meta time { color: var(--accent-ink); }
+[data-theme="dark"] .nav svg { color: var(--accent); }
 
 * { box-sizing: border-box; }
 html { color-scheme: light; }
@@ -202,8 +197,8 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 .swatch i { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px transparent; }
 .swatch[aria-pressed="true"] { color: var(--ink); font-weight: 500; }
 .swatch[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink); }
-.sw-ink { background: #2E4A78; } .sw-terracotta { background: #A04E33; } .sw-moss { background: #4F5F2E; } .sw-brass { background: #85652A; }
-[data-theme="dark"] .sw-ink { background: #86A8F5; } [data-theme="dark"] .sw-terracotta { background: #EE8B66; } [data-theme="dark"] .sw-moss { background: #AFCB6E; } [data-theme="dark"] .sw-brass { background: #D8B46E; }
+.sw-ink { background: #2E4A78; } .sw-terracotta { background: #A04E33; } .sw-moss { background: #4F5F2E; } .sw-gold { background: #8C6810; }
+[data-theme="dark"] .sw-ink { background: #86A8F5; } [data-theme="dark"] .sw-terracotta { background: #EE8B66; } [data-theme="dark"] .sw-moss { background: #AFCB6E; } [data-theme="dark"] .sw-gold { background: #E3B23C; }
 .toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--accent); position: relative; flex: none; }
 .toggle::after { content: ""; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-ink); }
 .bgs { display: flex; gap: 8px; }
@@ -229,8 +224,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 
 <div class="controls" role="toolbar" aria-label="Mockup controls">
   <div><span class="label">Theme</span><span class="seg" data-set="theme"><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
-  <div><span class="label">Accent</span><span class="seg" data-set="accent"><button aria-pressed="true" data-v="ink">Ink blue</button><button aria-pressed="false" data-v="terracotta">Terracotta</button><button aria-pressed="false" data-v="moss">Moss</button><button aria-pressed="false" data-v="brass">Brass</button></span></div>
-  <div><span class="label">Dark style</span><span class="seg" data-set="dark"><button aria-pressed="true" data-v="midnight">Midnight</button><button aria-pressed="false" data-v="espresso">Espresso</button><button aria-pressed="false" data-v="forest">Forest</button></span></div>
+  <div><span class="label">Accent</span><span class="seg" data-set="accent"><button aria-pressed="false" data-v="ink">Ink blue</button><button aria-pressed="false" data-v="terracotta">Terracotta</button><button aria-pressed="false" data-v="moss">Moss</button><button aria-pressed="true" data-v="gold">Gold</button></span></div>
   <span class="note-mock">Mockup only. Notes, names and counts are sample content.</span>
 </div>
 
@@ -406,14 +400,12 @@ the scroll is so calm, look at how the headings arrive</textarea>
             <h2>Appearance</h2>
             <div class="set-row"><div><div class="t">Theme</div><div class="d">System follows your Windows setting.</div></div>
               <span class="seg" data-set="theme"><button aria-pressed="false" data-v="system">System</button><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
-            <div class="set-row"><div><div class="t">Dark style</div><div class="d">The colour underneath dark mode.</div></div>
-              <span class="seg" data-set="dark"><button aria-pressed="true" data-v="midnight">Midnight</button><button aria-pressed="false" data-v="espresso">Espresso</button><button aria-pressed="false" data-v="forest">Forest</button></span></div>
             <div class="set-row"><div><div class="t">Accent colour</div><div class="d">Used for checkboxes, buttons and highlights.</div></div>
               <div class="swatches" data-set="accent">
-                <button class="swatch" aria-pressed="true" data-v="ink"><i class="sw-ink"></i>Ink blue</button>
+                <button class="swatch" aria-pressed="false" data-v="ink"><i class="sw-ink"></i>Ink blue</button>
                 <button class="swatch" aria-pressed="false" data-v="terracotta"><i class="sw-terracotta"></i>Terracotta</button>
                 <button class="swatch" aria-pressed="false" data-v="moss"><i class="sw-moss"></i>Moss</button>
-                <button class="swatch" aria-pressed="false" data-v="brass"><i class="sw-brass"></i>Brass</button>
+                <button class="swatch" aria-pressed="true" data-v="gold"><i class="sw-gold"></i>Gold</button>
               </div></div>
             <div class="set-row"><div><div class="t">New note background</div><div class="d">You can still change it per note.</div></div>
               <div class="bgs"><button class="bg" aria-pressed="true" aria-label="Plain"></button><button class="bg paper" aria-label="Warm paper"></button><button class="bg lined" aria-label="Lined"></button><button class="bg grid" aria-label="Grid"></button><button class="bg dots" aria-label="Dotted"></button></div></div>
