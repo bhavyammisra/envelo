@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="ink">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Envelo mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<style>
+:root {
+  --ground: #F1ECE2; --list: #F7F3EB; --paper: #FCFAF5; --ink: #26231E; --ink-2: #5A544A; --ink-3: #5F594F;
+  --line: #E3DCCE; --hover: #EAE3D6; --selected: #E3DACA; --field: #FFFFFF; --mark: #F3E2A6; --mark-ink: #4A3B0C;
+  --desk: #D9D2C4; --shadow: 0 12px 32px -8px rgb(60 48 30 / 22%), 0 2px 6px rgb(60 48 30 / 8%);
+  --accent: #2E4A78; --accent-ink: #FFFFFF; --accent-soft: #DCE3EF;
+  --serif: "Newsreader", Georgia, serif; --sans: "Instrument Sans", "Segoe UI", sans-serif;
+}
+[data-accent="terracotta"] { --accent: #A04E33; --accent-soft: #F1DDD3; }
+[data-accent="moss"] { --accent: #4F5F2E; --accent-soft: #E2E6D3; }
+[data-theme="dark"] {
+  --ground: #181715; --list: #1C1B19; --paper: #21201D; --ink: #ECE6DA; --ink-2: #A9A295; --ink-3: #8F887C;
+  --line: #2F2D29; --hover: #292724; --selected: #34312C; --field: #2A2825; --mark: #5A4A1A; --mark-ink: #F5E7B8;
+  --desk: #0F0E0D; --shadow: 0 12px 32px -8px rgb(0 0 0 / 55%), 0 2px 6px rgb(0 0 0 / 30%);
+  --accent: #9DB4DD; --accent-ink: #14213A; --accent-soft: #263248;
+}
+[data-theme="dark"][data-accent="terracotta"] { --accent: #E29878; --accent-ink: #3A1608; --accent-soft: #3E2A22; }
+[data-theme="dark"][data-accent="moss"] { --accent: #B3C283; --accent-ink: #1E260B; --accent-soft: #2C3220; }
+
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
+body { margin: 0; background: var(--desk); color: var(--ink); font: 400 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent-soft); color: var(--ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+[data-lucide] { width: 16px; height: 16px; stroke-width: 1.75; flex: none; }
+
+.controls { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 20px; align-items: center;
+  padding: 12px 24px; background: var(--ground); border-bottom: 1px solid var(--line); }
+.controls .label { color: var(--ink-2); font-size: 13px; margin-right: 6px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--field); }
+.seg button { padding: 5px 12px; font-size: 13px; color: var(--ink-2); }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--selected); color: var(--ink); font-weight: 500; }
+.note-mock { margin-left: auto; color: var(--ink-2); font-size: 12px; }
+
+main { padding: 32px 24px 64px; display: grid; gap: 48px; justify-items: center; }
+main > section { width: min(1240px, 100%); }
+.frame-title { width: min(1240px, 100%); margin: 0 0 12px; font: 500 13px/1 var(--sans); color: var(--ink); }
+
+.window { width: min(1240px, 100%); height: 760px; border-radius: 10px; overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid var(--line); display: grid; grid-template-rows: 36px 1fr; background: var(--paper); }
+.titlebar { display: flex; align-items: center; background: var(--ground); border-bottom: 1px solid var(--line); padding-left: 14px; }
+.titlebar .name { font: 500 13px/1 var(--serif); font-size: 15px; letter-spacing: 0.01em; }
+.caption { margin-left: auto; display: flex; height: 100%; }
+.caption span { width: 46px; display: grid; place-items: center; color: var(--ink-2); }
+.caption span:last-child:hover { background: #C42B1C; color: #fff; }
+
+.app { display: grid; grid-template-columns: 216px 304px minmax(0, 1fr); min-height: 0; }
+.sidebar { background: var(--ground); border-right: 1px solid var(--line); padding: 10px 8px; display: flex; flex-direction: column; gap: 2px; }
+.side-top { display: flex; justify-content: space-between; padding: 2px 6px 10px; color: var(--ink-2); }
+.icon-btn { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 7px; color: var(--ink-2); }
+.icon-btn:hover { background: var(--hover); color: var(--ink); }
+.nav { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 7px; color: var(--ink); font-size: 14px; }
+.nav:hover { background: var(--hover); }
+.nav[aria-current="true"] { background: var(--selected); font-weight: 500; }
+.nav svg { color: var(--ink-2); }
+.nav .count { margin-left: auto; color: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+.side-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 10px 6px; color: var(--ink-3); font-size: 12px; }
+.side-head button { color: var(--accent); font-size: 12px; font-weight: 500; }
+.side-foot { margin-top: auto; }
+
+.list { background: var(--list); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-height: 0; }
+.list-top { padding: 12px 12px 8px; display: flex; gap: 6px; }
+.search { flex: 1; display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 10px; border-radius: 8px;
+  background: var(--field); border: 1px solid var(--line); color: var(--ink-3); }
+.search input { border: 0; background: none; outline: none; font: inherit; color: var(--ink); width: 100%; }
+.search input::placeholder { color: var(--ink-3); }
+.search kbd { white-space: nowrap; font: 500 11px/1 var(--sans); color: var(--ink-3); border: 1px solid var(--line); border-radius: 4px; padding: 3px 5px; }
+.list-scroll { overflow: auto; padding: 0 8px 12px; }
+.group { padding: 14px 8px 6px; font: 500 12px/1 var(--sans); color: var(--ink-3); }
+.row { display: block; width: 100%; text-align: left; padding: 10px 10px 11px; border-radius: 8px; }
+.row + .row { margin-top: 1px; }
+.row:hover { background: var(--hover); }
+.row[aria-current="true"] { background: var(--selected); }
+.row-title { display: flex; align-items: center; gap: 6px; font: 500 16px/1.25 var(--serif); color: var(--ink); }
+.row-title svg { width: 13px; height: 13px; color: var(--accent); }
+.row-meta { display: flex; gap: 8px; margin-top: 3px; font-size: 13px; color: var(--ink-2); white-space: nowrap; overflow: hidden; }
+.row-meta time { color: var(--ink); font-variant-numeric: tabular-nums; flex: none; }
+.row-meta span { overflow: hidden; text-overflow: ellipsis; }
+
+.editor { min-height: 0; overflow: auto; position: relative; }
+.editor-bar { position: sticky; top: 0; display: flex; justify-content: flex-end; gap: 2px; padding: 8px 12px; background: var(--paper); z-index: 2; }
+.doc { max-width: 680px; margin: 0 auto; padding: 8px 48px 96px; }
+.stamp { color: var(--ink-3); font-size: 12px; margin-bottom: 18px; font-variant-numeric: tabular-nums; }
+.doc h1 { font: 500 38px/1.12 var(--serif); letter-spacing: -0.015em; margin: 0 0 14px; text-wrap: balance; }
+.doc h2 { font: 500 26px/1.2 var(--serif); letter-spacing: -0.01em; margin: 34px 0 10px; }
+.doc h3 { font: 600 19px/1.3 var(--serif); margin: 28px 0 8px; }
+.doc p, .doc li { font-size: 16px; line-height: 1.7; color: var(--ink); }
+.doc p { margin: 0 0 12px; }
+.doc .lede { color: var(--ink-2); }
+.doc ul { padding-left: 22px; margin: 0 0 12px; }
+.doc li::marker { color: var(--ink-3); }
+mark { background: var(--mark); color: var(--mark-ink); border-radius: 3px; padding: 0 2px; }
+.sel { background: var(--accent-soft); border-radius: 2px; position: relative; }
+
+.linkline { display: flex; align-items: center; gap: 10px; padding: 9px 12px; margin: 4px 0 12px; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--field); text-decoration: none; color: var(--ink); max-width: 420px; margin-bottom: 28px; }
+.linkline .fav { width: 22px; height: 22px; border-radius: 5px; background: var(--ink); color: var(--paper); display: grid; place-items: center; font: 600 11px/1 var(--sans); flex: none; }
+.linkline b { font-weight: 500; font-size: 14px; display: block; }
+.linkline small { color: var(--ink-2); font-size: 12px; }
+
+figure { margin: 16px 0 18px; }
+.shot { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 16 / 9; background: #EFEAE1; display: grid; grid-template-rows: 22px 1fr; }
+[data-theme="dark"] .shot { background: #2B2925; }
+.shot .chrome { background: rgb(0 0 0 / 6%); display: flex; gap: 5px; align-items: center; padding-left: 9px; }
+.shot .chrome i { width: 7px; height: 7px; border-radius: 50%; background: rgb(0 0 0 / 15%); }
+.shot .page { padding: 9% 10%; display: grid; align-content: start; gap: 10px; }
+.shot .page .b1 { height: 26%; min-height: 30px; width: 62%; background: rgb(0 0 0 / 14%); border-radius: 4px; }
+.shot .page .b2 { height: 9px; width: 44%; background: rgb(0 0 0 / 9%); border-radius: 3px; }
+.shot .page .b3 { height: 9px; width: 36%; background: rgb(0 0 0 / 9%); border-radius: 3px; }
+[data-theme="dark"] .shot .page div, [data-theme="dark"] .shot .chrome i { background: rgb(255 255 255 / 10%); }
+[data-theme="dark"] .shot .chrome { background: rgb(255 255 255 / 4%); }
+figcaption { margin-top: 6px; font-size: 12px; color: var(--ink-3); }
+
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 16px; line-height: 1.7; }
+.box { width: 17px; height: 17px; margin-top: 5px; border-radius: 5px; border: 1.5px solid var(--ink-3); display: grid; place-items: center; flex: none; }
+.box.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.box.on svg { width: 12px; height: 12px; stroke-width: 3; }
+.check.done span { color: var(--ink-3); text-decoration: line-through; }
+
+table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { font-weight: 500; color: var(--ink-2); background: var(--list); }
+
+.fmt { position: absolute; left: 50%; bottom: calc(100% + 8px); transform: translateX(-50%); display: flex; align-items: center; gap: 1px;
+  padding: 4px; border-radius: 9px; background: var(--field); border: 1px solid var(--line); box-shadow: var(--shadow); white-space: nowrap; z-index: 3; }
+.fmt button { height: 28px; min-width: 28px; padding: 0 7px; border-radius: 6px; display: grid; place-items: center; color: var(--ink-2); font-size: 13px; font-weight: 500; }
+.fmt button:hover, .fmt button[aria-pressed="true"] { background: var(--hover); color: var(--ink); }
+.fmt .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+.fmt .dot { width: 14px; height: 14px; border-radius: 4px; background: var(--mark); border: 1px solid rgb(0 0 0 / 10%); }
+
+/* quick capture */
+.desk { width: min(1240px, 100%); height: 420px; border-radius: 10px; background: var(--desk); border: 1px solid var(--line);
+  display: grid; place-items: center; position: relative; overflow: hidden; }
+.desk .ghost { position: absolute; inset: 40px 80px auto 80px; height: 300px; border-radius: 8px; background: rgb(127 127 127 / 12%); }
+.capture { position: relative; width: 560px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); box-shadow: var(--shadow); }
+.capture-head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 0; color: var(--ink-3); font-size: 12px; }
+.capture-head .name { font: 500 14px/1 var(--serif); color: var(--ink-2); }
+.capture textarea { display: block; width: 100%; min-height: 110px; resize: none; border: 0; outline: none; background: none;
+  padding: 10px 16px 6px; font: 400 18px/1.55 var(--serif); color: var(--ink); caret-color: var(--accent); }
+.capture-foot { display: flex; gap: 16px; padding: 10px 16px 12px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 12px; }
+.capture-foot kbd, .hint kbd { font: 500 11px/1 var(--sans); color: var(--ink-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 2px 5px; margin-right: 4px; background: var(--field); }
+
+/* lock setup */
+.lock { max-width: 440px; margin: 64px auto 0; padding: 0 24px; }
+.lock .ico { color: var(--accent); margin-bottom: 14px; }
+.lock .ico svg { width: 22px; height: 22px; }
+.lock h1 { font: 500 30px/1.15 var(--serif); margin: 0 0 8px; letter-spacing: -0.01em; }
+.lock p { margin: 0 0 24px; color: var(--ink-2); font-size: 15px; line-height: 1.6; }
+.field { display: grid; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 13px; font-weight: 500; color: var(--ink); }
+.field input, .field select { height: 38px; border-radius: 8px; border: 1px solid var(--line); background: var(--field); color: var(--ink);
+  padding: 0 12px; font: inherit; font-size: 14px; }
+.field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.field small { color: var(--ink-3); font-size: 12px; }
+.divider { height: 1px; background: var(--line); margin: 22px 0 18px; }
+.primary { height: 40px; padding: 0 18px; border-radius: 8px; background: var(--accent); color: var(--accent-ink); font-weight: 500; font-size: 14px; }
+.primary:hover { filter: brightness(1.08); }
+.warn { margin-top: 16px; display: flex; gap: 8px; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
+.warn svg { margin-top: 2px; color: var(--ink-3); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); background-clip: content-box; border: 3px solid transparent; }
+</style>
+</head>
+<body>
+
+<div class="controls" role="toolbar" aria-label="Mockup controls">
+  <div><span class="label">Theme</span><span class="seg" data-set="theme"><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
+  <div><span class="label">Accent</span><span class="seg" data-set="accent"><button aria-pressed="true" data-v="ink">Ink blue</button><button aria-pressed="false" data-v="terracotta">Terracotta</button><button aria-pressed="false" data-v="moss">Moss</button></span></div>
+  <span class="note-mock">Mockup only. Notes, names and counts are sample content.</span>
+</div>
+
+<main>
+  <section>
+    <p class="frame-title">Main window, text selected</p>
+    <div class="window">
+      <div class="titlebar">
+        <span class="name">Envelo</span>
+        <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
+      </div>
+      <div class="app">
+        <nav class="sidebar" aria-label="Library">
+          <div class="side-top">
+            <button class="icon-btn" aria-label="Hide sidebar"><i data-lucide="panel-left"></i></button>
+            <button class="icon-btn" aria-label="New note"><i data-lucide="square-pen"></i></button>
+          </div>
+          <a class="nav" aria-current="true"><i data-lucide="notebook"></i>All notes<span class="count">12</span></a>
+          <a class="nav"><i data-lucide="pin"></i>Pinned<span class="count">1</span></a>
+          <div class="side-head">Folders<button>New</button></div>
+          <a class="nav"><i data-lucide="folder"></i>College<span class="count">4</span></a>
+          <a class="nav"><i data-lucide="folder"></i>Reading<span class="count">3</span></a>
+          <div class="side-head">Private</div>
+          <a class="nav"><i data-lucide="lock"></i>Locked</a>
+          <a class="nav"><i data-lucide="trash-2"></i>Recently deleted<span class="count">1</span></a>
+          <div class="side-foot"><a class="nav"><i data-lucide="settings"></i>Settings</a></div>
+        </nav>
+
+        <section class="list" aria-label="Notes">
+          <div class="list-top">
+            <label class="search"><i data-lucide="search"></i><input placeholder="Search notes" aria-label="Search notes"><kbd>Ctrl K</kbd></label>
+            <button class="icon-btn" aria-label="Card view"><i data-lucide="layout-grid"></i></button>
+          </div>
+          <div class="list-scroll">
+            <div class="group">Pinned</div>
+            <button class="row" aria-current="true"><div class="row-title"><i data-lucide="pin"></i>Website ideas</div><div class="row-meta"><time>16:45</time><span>Sites and details worth keeping for the portfolio</span></div></button>
+            <div class="group">Today</div>
+            <button class="row"><div class="row-title">linear.app/method</div><div class="row-meta"><time>14:10</time><span>Read later, the part on writing specs</span></div></button>
+            <button class="row"><div class="row-title">Book to read</div><div class="row-meta"><time>11:32</time><span>Recommended in class, check the library</span></div></button>
+            <div class="group">Yesterday</div>
+            <button class="row"><div class="row-title">Marks</div><div class="row-meta"><time>21:51</time><span>CAO 25/30, MST next week</span></div></button>
+            <div class="group">Previous 7 days</div>
+            <button class="row"><div class="row-title">Envelo icon ideas</div><div class="row-meta"><time>Mon</time><span>A folded corner, maybe a pressed leaf</span></div></button>
+            <button class="row"><div class="row-title">Trip packing list</div><div class="row-meta"><time>Sat</time><span>Charger, notebook, the grey jacket</span></div></button>
+            <div class="group">September</div>
+            <button class="row"><div class="row-title">Shortcut ideas</div><div class="row-meta"><time>28/09</time><span>Ctrl+Shift+Space for quick capture</span></div></button>
+          </div>
+        </section>
+
+        <section class="editor" aria-label="Note">
+          <div class="editor-bar">
+            <button class="icon-btn" aria-label="Pin note"><i data-lucide="pin"></i></button>
+            <button class="icon-btn" aria-label="Note background"><i data-lucide="file-text"></i></button>
+            <button class="icon-btn" aria-label="More"><i data-lucide="ellipsis"></i></button>
+          </div>
+          <article class="doc">
+            <div class="stamp">18 Oct 2026, 16:20 · edited 16:45</div>
+            <h1>Website ideas</h1>
+            <p class="lede">Sites and details worth keeping for the portfolio.</p>
+
+            <h2>Sites I like</h2>
+            <a class="linkline" href="#"><span class="fav">L</span><span><b>Luke Baffait</b><small>lukebaffait.fr</small></span></a>
+            <p>The scroll story felt <span class="sel">calm and deliberate<span class="fmt" role="toolbar" aria-label="Format">
+              <button>H1</button><button>H2</button><button>H3</button><span class="sep"></span>
+              <button aria-label="Bold"><i data-lucide="bold"></i></button><button aria-label="Italic"><i data-lucide="italic"></i></button><button aria-label="Underline"><i data-lucide="underline"></i></button><button aria-label="Strikethrough"><i data-lucide="strikethrough"></i></button><span class="sep"></span>
+              <button aria-label="Highlight"><span class="dot"></span></button><button aria-label="Link"><i data-lucide="link"></i></button>
+            </span></span>. Every section waits for you instead of rushing. <mark>Keep the type pairing and the spacing.</mark></p>
+
+            <figure>
+              <div class="shot" aria-label="Pasted screenshot"><div class="chrome"><i></i><i></i><i></i></div><div class="page"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div></div>
+              <figcaption>Screenshot, 18 Oct</figcaption>
+            </figure>
+
+            <h3>To try</h3>
+            <div class="check done"><span class="box on"><i data-lucide="check"></i></span><span>Pick a serif for headings</span></div>
+            <div class="check"><span class="box"></span><span>Test the scroll on a phone</span></div>
+            <div class="check"><span class="box"></span><span>Write the about page</span></div>
+
+            <table>
+              <thead><tr><th>Site</th><th>What I like</th><th>Type</th></tr></thead>
+              <tbody>
+                <tr><td>lukebaffait.fr</td><td>Slow, immersive scroll</td><td>Serif display</td></tr>
+                <tr><td>linear.app</td><td>Crisp product pages</td><td>Clean sans</td></tr>
+              </tbody>
+            </table>
+          </article>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="frame-title">Quick capture, Ctrl+Shift+Space over any app</p>
+    <div class="desk">
+      <div class="ghost"></div>
+      <div class="capture" role="dialog" aria-label="Quick note">
+        <div class="capture-head"><span class="name">Envelo</span><span>New note</span></div>
+        <textarea aria-label="Quick note text">https://lukebaffait.fr
+the scroll is so calm, look at how the headings arrive</textarea>
+        <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Esc</kbd>Close</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="frame-title">Locked folder, first time</p>
+    <div class="window">
+      <div class="titlebar">
+        <span class="name">Envelo</span>
+        <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
+      </div>
+      <div class="app" style="grid-template-columns: 216px minmax(0, 1fr);">
+        <nav class="sidebar" aria-label="Library">
+          <div class="side-top">
+            <button class="icon-btn" aria-label="Hide sidebar"><i data-lucide="panel-left"></i></button>
+            <button class="icon-btn" aria-label="New note"><i data-lucide="square-pen"></i></button>
+          </div>
+          <a class="nav"><i data-lucide="notebook"></i>All notes<span class="count">12</span></a>
+          <a class="nav"><i data-lucide="pin"></i>Pinned<span class="count">1</span></a>
+          <div class="side-head">Folders<button>New</button></div>
+          <a class="nav"><i data-lucide="folder"></i>College<span class="count">4</span></a>
+          <a class="nav"><i data-lucide="folder"></i>Reading<span class="count">3</span></a>
+          <div class="side-head">Private</div>
+          <a class="nav" aria-current="true"><i data-lucide="lock"></i>Locked</a>
+          <a class="nav"><i data-lucide="trash-2"></i>Recently deleted<span class="count">1</span></a>
+          <div class="side-foot"><a class="nav"><i data-lucide="settings"></i>Settings</a></div>
+        </nav>
+        <section class="editor" aria-label="Set up locked folder">
+          <form class="lock" onsubmit="return false">
+            <div class="ico"><i data-lucide="lock"></i></div>
+            <h1>Set up your locked folder</h1>
+            <p>Notes here are encrypted on this laptop. Open them with your password, or with your security question if you forget it.</p>
+            <div class="field"><label for="pw">Password</label><input id="pw" type="password" value="••••••••••"></div>
+            <div class="field"><label for="pw2">Confirm password</label><input id="pw2" type="password"></div>
+            <div class="divider"></div>
+            <div class="field"><label for="q">Security question</label>
+              <select id="q"><option>What was the name of your first pet?</option><option>What street did you grow up on?</option><option>Write your own question</option></select></div>
+            <div class="field"><label for="a">Answer</label><input id="a" placeholder="Capitals and spaces don't matter"><small>Pick something people who know you couldn't guess.</small></div>
+            <button class="primary" type="submit">Lock folder</button>
+            <div class="warn"><i data-lucide="info"></i><span>If you forget both the password and the answer, these notes can't be recovered.</span></div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  lucide.createIcons();
+  document.querySelectorAll('.seg').forEach(seg => {
+    seg.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+      document.documentElement.dataset[seg.dataset.set] = b.dataset.v;
+    });
+  });
+</script>
+</body>
+</html>
