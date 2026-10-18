@@ -114,13 +114,14 @@ confirmation shows briefly.
   (SVG displacement map, `design/lens-map.png`), with a bright rim highlight and a soft shadow.
   Clicking another note glides the lens there with a slight springy settle (about 0.55 s).
   Only this one small element uses a backdrop filter.
-- Settings, "Selected note style": Liquid glass (default) or Contour lines.
+- Settings, "Selected note style": Liquid glass (default), Contour lines, or None (just the
+  plain soft highlight, no effect).
 - Theme switch cross-fades in about 0.2 s (one GPU snapshot, no per-element transitions).
 - App icon: a sealed envelope on warm paper with a folded top-right corner (see mockup).
 
 ## Settings
 
-- Appearance: theme, selected note style (Liquid glass or Contour lines), accent colour, default
+- Appearance: theme, selected note style (Liquid glass, Contour lines or None), accent colour, default
   background for new notes.
 - Notes: notes folder location, quick capture shortcut, start with Windows (tray).
 - Locked folder: change password and security question (after unlocking), lock after idle time.

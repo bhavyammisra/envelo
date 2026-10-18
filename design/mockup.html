@@ -279,6 +279,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 [data-theme="dark"] .lens::before { background: linear-gradient(180deg, rgb(255 255 255 / 9%), transparent 42%); }
 [data-sel="liquid"] .lens { display: block; }
 [data-sel="liquid"] .topo { display: none; }
+[data-sel="none"] .topo { display: none; }
 [data-sel="liquid"] .row[aria-current="true"] { background: transparent; box-shadow: none; }
 .list-scroll > .row, .list-scroll > .group { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .lens { transition: none; } }
@@ -307,7 +308,7 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 <div class="controls" role="toolbar" aria-label="Mockup controls">
   <div><span class="label">Theme</span><span class="seg" data-set="theme"><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
   <div><span class="label">Accent</span><span class="seg" data-set="accent"><button aria-pressed="false" data-v="ink">Ink blue</button><button aria-pressed="false" data-v="terracotta">Terracotta</button><button aria-pressed="false" data-v="moss">Moss</button><button aria-pressed="true" data-v="gold">Gold</button></span></div>
-  <div><span class="label">Selected note</span><span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button></span></div>
+  <div><span class="label">Selected note</span><span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button><button aria-pressed="false" data-v="none">None</button></span></div>
   <span class="note-mock">Mockup only. Notes, names and counts are sample content.</span>
 </div>
 
@@ -502,7 +503,7 @@ the scroll is so calm, look at how the headings arrive</textarea>
             <div class="set-row"><div><div class="t">Theme</div><div class="d">System follows your Windows setting.</div></div>
               <span class="seg" data-set="theme"><button aria-pressed="false" data-v="system">System</button><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
             <div class="set-row"><div><div class="t">Selected note style</div><div class="d">How the open note stands out in the list.</div></div>
-              <span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button></span></div>
+              <span class="seg" data-set="sel"><button aria-pressed="true" data-v="liquid">Liquid glass</button><button aria-pressed="false" data-v="topo">Contour lines</button><button aria-pressed="false" data-v="none">None</button></span></div>
             <div class="set-row"><div><div class="t">Accent colour</div><div class="d">Used for checkboxes, buttons and highlights.</div></div>
               <div class="swatches" data-set="accent">
                 <button class="swatch" aria-pressed="false" data-v="ink"><i class="sw-ink"></i>Ink blue</button>
