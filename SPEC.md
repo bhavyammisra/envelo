@@ -184,6 +184,11 @@ highlighted. Index kept in memory, built at start-up from the files.
 
 ## Performance budget
 
+Measured 19 Oct 2026, release build, this laptop: launch to visible window median 825 ms
+(fastest 789 ms) over 6 runs; the very first launch after a while took 1.16 s while Windows
+loaded the WebView2 engine. Opening from the tray is instant (the window is already loaded).
+Installer: 2.1 MB; app: 5 MB.
+
 - Cold start to usable window: under 1 second on this laptop.
 - Typing latency: no visible delay in a 10,000 word note.
 - List scrolling smooth with 5,000 notes (only visible rows drawn).
