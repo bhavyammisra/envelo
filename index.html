@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="gold" data-sel="liquid">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Envelo</title>
+  <script>
+    // apply saved look before first paint so there is never a light flash in dark mode
+    try {
+      const s = JSON.parse(localStorage.getItem('envelo.settings') || '{}'), d = document.documentElement;
+      const theme = s.theme === 'dark' || (s.theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      d.dataset.theme = theme; if (s.accent) d.dataset.accent = s.accent; if (s.sel) d.dataset.sel = s.sel;
+    } catch {}
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

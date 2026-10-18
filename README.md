@@ -1,28 +1,17 @@
 # Envelo
 
-A quiet, fast notes app for my laptop.
+A quiet, fast notes app for my laptop. Notes are plain `.md` files in `Documents\Envelo`.
 
-## Stack
+- Full spec: [SPEC.md](SPEC.md)
+- Approved design: [design/mockup.html](design/mockup.html)
 
-- Tauri 2 (desktop shell, uses the WebView2 already on Windows)
-- Svelte (UI, tiny runtime)
-- CodeMirror 6 (editor, stays smooth on long notes)
-- Notes saved as plain `.md` files in a folder
+## Run it
 
-## Speed goals
+```
+npm install
+npm run tauri dev
+```
 
-- Opens in under a second
-- No white flash: the window shows only once it is ready
-- Optional: lives in the tray with a global shortcut for instant open
+Build an installer with `npm run tauri build`.
 
-## v1 features
-
-- Create, edit, delete notes, with autosave
-- Sidebar list of notes
-- Search by title and text
-- Markdown: headings, bold/italic, lists, checkboxes, code, with edit/preview
-- Folders (real folders on disk)
-
-## Not in v1
-
-Cloud sync, accounts, sharing, attachments.
+Needs Node.js, Rust (rustup) and the Microsoft C++ Build Tools.
