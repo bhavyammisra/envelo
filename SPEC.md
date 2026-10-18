@@ -90,7 +90,7 @@ keeps running in the tray so this is instant.
 
 - Light and dark mode, following Windows with a manual override (System, Light, Dark).
 - Light: warm paper throughout.
-- Dark: warm grey for the shell (title bar, sidebar, notes list, search) and near-black for the
+- Dark: clean neutral grey for the shell (title bar, sidebar, notes list, search) and near-black for the
   note itself, so the writing area has the most contrast.
 - Accent colour chosen in Settings: Ink blue (default), Terracotta or Moss. Each has a light and
   a dark variant.
