@@ -213,6 +213,19 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 [data-theme="dark"] .primary { box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%); }
 [data-theme="dark"] .window { border-color: rgb(255 255 255 / 9%); }
 
+/* selected note: its own words, set in faint lines behind the tile */
+.row { position: relative; overflow: hidden; isolation: isolate; }
+.row > :not(.words) { position: relative; z-index: 1; }
+.words { position: absolute; inset: 0; z-index: 0; pointer-events: none; display: grid; align-content: center; gap: 1px;
+  font: italic 400 12px/1.3 var(--serif); color: var(--ink); opacity: 0.06; white-space: nowrap;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 35%, #000 80%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 35%, #000 80%, transparent); }
+[data-theme="dark"] .words { opacity: 0.09; }
+.words span { display: block; transform: translateX(var(--from)); opacity: 0;
+  animation: words-in 560ms cubic-bezier(0.22, 1, 0.36, 1) forwards; animation-delay: calc(var(--i) * 45ms); }
+@keyframes words-in { to { transform: translateX(var(--to)); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .words span { animation: none; transform: translateX(var(--to)); opacity: 1; } }
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-3); background-clip: content-box; border: 3px solid transparent; }
@@ -426,6 +439,26 @@ the scroll is so calm, look at how the headings arrive</textarea>
 
 <script>
   lucide.createIcons();
+  // selected note gets its own words as faint moving-in lines, once
+  const words = row => {
+    row.querySelector('.words')?.remove();
+    const text = (row.querySelector('.row-title').textContent + ' ' + row.querySelector('.row-meta span').textContent + ' ').repeat(4);
+    const box = document.createElement('div'); box.className = 'words'; box.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 6; i++) {
+      const line = document.createElement('span'); const shift = (i % 2 ? -1 : 1) * 24;
+      line.style.setProperty('--i', i); line.style.setProperty('--from', `${-40 - i * 9 + shift}px`); line.style.setProperty('--to', `${-i * 9 - 20}px`);
+      line.textContent = text.slice(i * 11); box.append(line);
+    }
+    row.prepend(box);
+  };
+  document.querySelectorAll('.list').forEach(list => {
+    const cur = list.querySelector('.row[aria-current="true"]'); if (cur) words(cur);
+    list.addEventListener('click', e => {
+      const row = e.target.closest('.row'); if (!row || row.getAttribute('aria-current') === 'true') return;
+      list.querySelectorAll('.row').forEach(r => { r.removeAttribute('aria-current'); r.querySelector('.words')?.remove(); });
+      row.setAttribute('aria-current', 'true'); words(row);
+    });
+  });
   const root = document.documentElement;
   const apply = (key, v) => {
     root.dataset[key] = v === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v;

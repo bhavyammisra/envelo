@@ -96,6 +96,9 @@ keeps running in the tray so this is instant.
 - Accent colour chosen in Settings: Gold (default, like Apple Notes), Ink blue, Terracotta or
   Moss. Each has a light and a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
+- Selected note signature: the note's own words, set tiny, italic and very faint in lines behind
+  its tile in the list. They slide in once (about half a second) when the note is selected, then
+  stay still. Off when Windows "reduce animations" is on (lines shown without motion).
 
 ## Settings
 
