@@ -45,6 +45,17 @@ export async function load() {
   store.loaded = true;
 }
 
+/** Picks up notes written elsewhere (quick capture) without disturbing the one being edited. */
+export async function refresh() {
+  const known = new Set(store.notes.map((n) => n.path));
+  const fresh = (await api.list()).filter((n) => !known.has(n.path)).map(decorate);
+  if (!fresh.length) return;
+  store.notes = [...fresh, ...store.notes];
+  if (store.currentId == null) store.currentId = sorted(fresh)[0].id;
+}
+
+export const flushAll = () => Promise.all(store.notes.map(flush));
+
 export const sorted = (notes) => [...notes].sort((a, b) => b.modified.localeCompare(a.modified));
 export const current = () => store.notes.find((n) => n.id === store.currentId) ?? null;
 

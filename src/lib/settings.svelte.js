@@ -28,4 +28,10 @@ export function set(key, value) {
 }
 
 dark.addEventListener('change', () => settings.theme === 'system' && paint());
+// other Envelo windows (quick capture) follow changes made in Settings
+addEventListener('storage', (e) => {
+  if (e.key !== KEY) return;
+  try { Object.assign(settings, JSON.parse(e.newValue || '{}')); } catch {}
+  paint();
+});
 paint();

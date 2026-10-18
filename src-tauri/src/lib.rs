@@ -1,7 +1,11 @@
 use serde::Serialize;
 use std::fs;
 use std::path::{Component, Path, PathBuf};
-use tauri::Manager;
+use std::sync::atomic::{AtomicBool, Ordering};
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::{Emitter, Manager, WindowEvent};
+use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 #[derive(Serialize)]
 struct Note {
@@ -214,13 +218,111 @@ async fn fetch_title(url: String) -> Option<String> {
     .flatten()
 }
 
+/// Set when Windows starts Envelo at sign-in: it waits in the tray instead of opening a window.
+static STARTED_HIDDEN: AtomicBool = AtomicBool::new(false);
+
+#[tauri::command]
+fn started_hidden() -> bool {
+    STARTED_HIDDEN.load(Ordering::Relaxed)
+}
+
+/// Called by the main window once it has saved everything.
+#[tauri::command]
+fn quit(app: tauri::AppHandle) {
+    app.exit(0);
+}
+
+fn show_main(app: &tauri::AppHandle) {
+    if let Some(w) = app.get_webview_window("main") {
+        let _ = w.unminimize();
+        let _ = w.show();
+        let _ = w.set_focus();
+    }
+}
+
+fn show_capture(app: &tauri::AppHandle) {
+    if let Some(w) = app.get_webview_window("capture") {
+        let _ = w.center();
+        let _ = w.show();
+        let _ = w.set_focus();
+        let _ = w.emit("capture-open", ());
+    }
+}
+
+fn request_quit(app: &tauri::AppHandle) {
+    // the main window flushes unsaved edits, then calls `quit`; exit anyway if it can't answer
+    let _ = app.emit_to("main", "quit-requested", ());
+    let app = app.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_secs(3));
+        app.exit(0);
+    });
+}
+
+fn tray(app: &tauri::App) -> tauri::Result<()> {
+    let open = MenuItem::with_id(app, "open", "Open Envelo", true, None::<&str>)?;
+    let capture = MenuItem::with_id(app, "capture", "Quick note    Ctrl+Shift+Space", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit Envelo", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&open, &capture, &PredefinedMenuItem::separator(app)?, &quit])?;
+    TrayIconBuilder::with_id("tray")
+        .icon(app.default_window_icon().cloned().expect("app icon"))
+        .tooltip("Envelo")
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(|app, e| match e.id.as_ref() {
+            "open" => show_main(app),
+            "capture" => show_capture(app),
+            "quit" => request_quit(app),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, e| {
+            if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = e {
+                show_main(tray.app_handle());
+            }
+        })
+        .build(app)?;
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let capture_keys = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::Space);
     tauri::Builder::default()
+        // a second launch (Start menu, taskbar) just brings the running Envelo forward
+        .plugin(tauri_plugin_single_instance::init(|app, _, _| show_main(app)))
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, Some(vec!["--hidden"])))
+        .plugin(
+            tauri_plugin_global_shortcut::Builder::new()
+                .with_handler(move |app, sc, ev| {
+                    if *sc == capture_keys && ev.state() == ShortcutState::Pressed {
+                        show_capture(app);
+                    }
+                })
+                .build(),
+        )
+        .setup(move |app| {
+            STARTED_HIDDEN.store(std::env::args().any(|a| a == "--hidden"), Ordering::Relaxed);
+            if let Err(e) = app.global_shortcut().register(capture_keys) {
+                eprintln!("Ctrl+Shift+Space is taken by another app: {e}");
+            }
+            tray(app)?;
+            Ok(())
+        })
+        // closing the window keeps Envelo in the tray so quick capture stays instant
+        .on_window_event(|w, e| {
+            if let WindowEvent::CloseRequested { api, .. } = e {
+                if w.label() == "main" {
+                    api.prevent_close();
+                    let _ = w.hide();
+                }
+            }
+        })
         // the front end shows the window once the note is painted; this is the safety net if it can't
         .on_page_load(|webview, payload| {
-            if matches!(payload.event(), tauri::webview::PageLoadEvent::Finished) {
+            if webview.label() == "main" && !STARTED_HIDDEN.load(Ordering::Relaxed)
+                && matches!(payload.event(), tauri::webview::PageLoadEvent::Finished)
+            {
                 let w = webview.window();
                 std::thread::spawn(move || {
                     std::thread::sleep(std::time::Duration::from_millis(400));
@@ -228,7 +330,9 @@ pub fn run() {
                 });
             }
         })
-        .invoke_handler(tauri::generate_handler![list_notes, save_note, trash_note, notes_root, save_image, fetch_title])
+        .invoke_handler(tauri::generate_handler![
+            list_notes, save_note, trash_note, notes_root, save_image, fetch_title, started_hidden, quit
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Envelo");
 }

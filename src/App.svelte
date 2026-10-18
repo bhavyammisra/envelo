@@ -1,10 +1,13 @@
 <script>
   import { onMount, tick } from 'svelte';
   import { getCurrentWindow } from '@tauri-apps/api/window';
+  import { invoke } from '@tauri-apps/api/core';
+  import { listen } from '@tauri-apps/api/event';
   import { Minus, Square, X, PanelLeft, SquarePen, Notebook, Settings as Gear, Search, Maximize2, Minimize2, Trash2 } from 'lucide-svelte';
   import Editor from './lib/Editor.svelte';
   import Settings from './lib/Settings.svelte';
   import { initMedia } from './lib/media.js';
+  import { refresh, flushAll } from './lib/notes.svelte.js';
   import { store, load, visible, current, select, create, edit, remove, flush, groupOf, timeOf, stampOf } from './lib/notes.svelte.js';
 
   const win = '__TAURI_INTERNALS__' in window ? getCurrentWindow() : null;
@@ -84,7 +87,12 @@
       await tick();
       // shown only once the last note is in the DOM: no splash, no white flash.
       // (a hidden web view doesn't run animation frames, so this can't wait for one)
-      win?.show();
+      if (win && !(await invoke('started_hidden'))) win.show();
+    }
+    if (win) {
+      listen('notes-changed', () => refresh());
+      // Quit from the tray: save anything still pending, then exit
+      listen('quit-requested', async () => { await flushAll(); invoke('quit'); });
     }
     addEventListener('beforeunload', () => store.notes.forEach(flush));
   });
@@ -107,7 +115,7 @@
     <div class="caption">
       <button aria-label="Minimise" onclick={() => win?.minimize()}><Minus {...icon} /></button>
       <button aria-label="Maximise" onclick={() => win?.toggleMaximize()}><Square size={14} strokeWidth={1.5} /></button>
-      <button class="close" aria-label="Close" onclick={() => win?.close()}><X {...icon} /></button>
+      <button class="close" aria-label="Close to tray" title="Close (Envelo keeps running in the tray)" onclick={() => flushAll().then(() => win?.close())}><X {...icon} /></button>
     </div>
   </div>
 

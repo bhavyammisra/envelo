@@ -22,6 +22,22 @@
         "decorations": false,
         "visible": false,
         "dragDropEnabled": false
+      },
+      {
+        "label": "capture",
+        "url": "index.html?view=capture",
+        "title": "Envelo quick note",
+        "width": 600,
+        "height": 250,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "resizable": false,
+        "visible": false,
+        "center": true,
+        "focus": true
       }
     ],
     "security": {

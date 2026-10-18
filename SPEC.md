@@ -78,11 +78,25 @@ highlighted. Index kept in memory, built at start-up from the files.
 
 ## Quick capture
 
-Ctrl+Shift+Space from anywhere in Windows opens a small box over the current app. Type or paste
-a thought or link, Enter saves it as a new note, Shift+Enter adds a line, Esc closes. Envelo
-keeps running in the tray so this is instant.
-On Enter the box folds up and away like a letter (about 0.35 s) and a small "Saved to Envelo"
-confirmation shows briefly.
+- Ctrl+Shift+Space from anywhere in Windows opens a small box in the middle of the screen, over
+  the current app (a separate always-on-top window).
+- Enter saves it as a new note, Shift+Enter adds a line, Esc or clicking away closes it. A
+  dismissed draft is kept for next time.
+- Each line becomes its own paragraph; a line that is only a link becomes a link card (its title
+  is fetched when the note is opened).
+- On Enter the box folds up and away (about 0.35 s) and "Saved to Envelo" shows briefly. The
+  main window's list picks up the new note immediately.
+
+## Tray and startup
+
+- Closing the main window hides it; Envelo keeps running in the tray so quick capture is
+  instant. Unsaved edits are written first.
+- Tray icon: left-click opens Envelo. Menu: Open Envelo, Quick note, Quit Envelo (saves pending
+  edits, then exits).
+- Starting Envelo again (Start menu, taskbar) brings the running window forward; there is only
+  ever one copy running.
+- Settings, "Start with Windows" (off by default): launches at sign-in straight into the tray,
+  without opening a window.
 
 ## Organising
 
@@ -130,7 +144,8 @@ confirmation shows briefly.
 
 - Appearance: theme, selected note style (Liquid glass, Contour lines or None), accent colour, default
   background for new notes.
-- Notes: notes folder location, quick capture shortcut, start with Windows (tray).
+- Notes: notes folder location (shown), quick capture shortcut (shown; changing it is not in v1),
+  start with Windows.
 - Locked folder: change password and security question (after unlocking), lock after idle time.
 
 ## Shortcuts

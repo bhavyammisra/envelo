@@ -338,3 +338,17 @@ body { background: var(--paper); overflow: hidden; }
 .viewer img { max-width: 100%; max-height: 100%; border-radius: 10px; box-shadow: 0 30px 60px -20px rgb(0 0 0 / 60%); }
 @keyframes viewer-in { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .viewer { animation: none; } }
+
+/* ---- quick capture window (transparent, so the card's own shadow shows) ---- */
+html.capture-window, html.capture-window body { background: transparent; }
+.capture-stage { height: 100%; display: grid; place-items: center; position: relative; }
+.capture-stage .capture { width: 560px; }
+.capture textarea::placeholder { color: var(--ink-3); }
+.capture-error { margin: 0 16px 8px; font-size: 12px; color: #C42B1C; }
+.capture-stage .saved { position: absolute; }
+
+/* settings switch */
+.toggle { border: 0; cursor: pointer; }
+.toggle[aria-checked="false"] { background: var(--line); }
+.toggle[aria-checked="false"]::after { right: auto; left: 3px; background: var(--ink-2); }
+.toggle::after { transition: left 160ms cubic-bezier(0.22, 1, 0.36, 1), right 160ms cubic-bezier(0.22, 1, 0.36, 1); }
