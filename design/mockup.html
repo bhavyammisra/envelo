@@ -19,9 +19,9 @@
 [data-accent="terracotta"] { --accent: #A04E33; --accent-soft: #F1DDD3; }
 [data-accent="moss"] { --accent: #4F5F2E; --accent-soft: #E2E6D3; }
 [data-theme="dark"] {
-  --ground: #181715; --list: #1C1B19; --paper: #21201D; --ink: #ECE6DA; --ink-2: #A9A295; --ink-3: #8F887C;
-  --line: #2F2D29; --hover: #292724; --selected: #34312C; --field: #2A2825; --mark: #5A4A1A; --mark-ink: #F5E7B8;
-  --desk: #0F0E0D; --shadow: 0 12px 32px -8px rgb(0 0 0 / 55%), 0 2px 6px rgb(0 0 0 / 30%);
+  --ground: #262522; --list: #201F1D; --paper: #0E0E0D; --ink: #EEE8DD; --ink-2: #ADA699; --ink-3: #958E82;
+  --line: #34322E; --hover: #302E2A; --selected: #3B3833; --field: #2E2C29; --mark: #5A4A1A; --mark-ink: #F5E7B8;
+  --desk: #3A3834; --shadow: 0 12px 32px -8px rgb(0 0 0 / 55%), 0 2px 6px rgb(0 0 0 / 30%);
   --accent: #9DB4DD; --accent-ink: #14213A; --accent-soft: #263248;
 }
 [data-theme="dark"][data-accent="terracotta"] { --accent: #E29878; --accent-ink: #3A1608; --accent-soft: #3E2A22; }
@@ -170,6 +170,33 @@ th { font-weight: 500; color: var(--ink-2); background: var(--list); }
 .primary:hover { filter: brightness(1.08); }
 .warn { margin-top: 16px; display: flex; gap: 8px; color: var(--ink-2); font-size: 13px; line-height: 1.5; }
 .warn svg { margin-top: 2px; color: var(--ink-3); }
+
+/* settings */
+.settings { max-width: 620px; margin: 0 auto; padding: 40px 40px 80px; }
+.settings h1 { font: 500 30px/1.15 var(--serif); margin: 0 0 28px; letter-spacing: -0.01em; }
+.settings h2 { font: 500 19px/1.3 var(--serif); margin: 30px 0 4px; }
+.set-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.set-row .t { font-size: 14px; font-weight: 500; }
+.set-row .d { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.set-row .path { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.ghost-btn { height: 32px; padding: 0 12px; border-radius: 7px; border: 1px solid var(--line); background: var(--field); font-size: 13px; font-weight: 500; }
+.ghost-btn:hover { background: var(--hover); }
+.swatches { display: flex; gap: 10px; }
+.swatch { display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); padding: 4px; border-radius: 8px; }
+.swatch i { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px transparent; }
+.swatch[aria-pressed="true"] { color: var(--ink); font-weight: 500; }
+.swatch[aria-pressed="true"] i { box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink); }
+.sw-ink { background: #2E4A78; } .sw-terracotta { background: #A04E33; } .sw-moss { background: #4F5F2E; }
+[data-theme="dark"] .sw-ink { background: #9DB4DD; } [data-theme="dark"] .sw-terracotta { background: #E29878; } [data-theme="dark"] .sw-moss { background: #B3C283; }
+.toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--accent); position: relative; flex: none; }
+.toggle::after { content: ""; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-ink); }
+.bgs { display: flex; gap: 8px; }
+.bg { width: 40px; height: 52px; border-radius: 6px; border: 1px solid var(--line); background: var(--field); }
+.bg.paper { background: #EFE7D8; } .bg.lined { background: var(--field) repeating-linear-gradient(transparent 0 9px, var(--line) 9px 10px); }
+.bg.grid { background-color: var(--field); background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 8px 8px; }
+.bg.dots { background-color: var(--field); background-image: radial-gradient(var(--ink-3) 1px, transparent 1.2px); background-size: 8px 8px; }
+.bg[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 2px; }
+[data-theme="dark"] .bg.paper { background: #3A342A; }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
@@ -326,15 +353,71 @@ the scroll is so calm, look at how the headings arrive</textarea>
       </div>
     </div>
   </section>
+
+  <section>
+    <p class="frame-title">Settings</p>
+    <div class="window">
+      <div class="titlebar">
+        <span class="name">Envelo</span>
+        <div class="caption" aria-hidden="true"><span><i data-lucide="minus"></i></span><span><i data-lucide="square"></i></span><span><i data-lucide="x"></i></span></div>
+      </div>
+      <div class="app" style="grid-template-columns: 216px minmax(0, 1fr);">
+        <nav class="sidebar" aria-label="Library">
+          <div class="side-top">
+            <button class="icon-btn" aria-label="Hide sidebar"><i data-lucide="panel-left"></i></button>
+            <button class="icon-btn" aria-label="New note"><i data-lucide="square-pen"></i></button>
+          </div>
+          <a class="nav"><i data-lucide="notebook"></i>All notes<span class="count">12</span></a>
+          <a class="nav"><i data-lucide="pin"></i>Pinned<span class="count">1</span></a>
+          <div class="side-head">Folders<button>New</button></div>
+          <a class="nav"><i data-lucide="folder"></i>College<span class="count">4</span></a>
+          <a class="nav"><i data-lucide="folder"></i>Reading<span class="count">3</span></a>
+          <div class="side-head">Private</div>
+          <a class="nav"><i data-lucide="lock"></i>Locked</a>
+          <a class="nav"><i data-lucide="trash-2"></i>Recently deleted<span class="count">1</span></a>
+          <div class="side-foot"><a class="nav" aria-current="true"><i data-lucide="settings"></i>Settings</a></div>
+        </nav>
+        <section class="editor" aria-label="Settings">
+          <div class="settings">
+            <h1>Settings</h1>
+            <h2>Appearance</h2>
+            <div class="set-row"><div><div class="t">Theme</div><div class="d">System follows your Windows setting.</div></div>
+              <span class="seg" data-set="theme"><button aria-pressed="false" data-v="system">System</button><button aria-pressed="true" data-v="light">Light</button><button aria-pressed="false" data-v="dark">Dark</button></span></div>
+            <div class="set-row"><div><div class="t">Accent colour</div><div class="d">Used for checkboxes, buttons and highlights.</div></div>
+              <div class="swatches" data-set="accent">
+                <button class="swatch" aria-pressed="true" data-v="ink"><i class="sw-ink"></i>Ink blue</button>
+                <button class="swatch" aria-pressed="false" data-v="terracotta"><i class="sw-terracotta"></i>Terracotta</button>
+                <button class="swatch" aria-pressed="false" data-v="moss"><i class="sw-moss"></i>Moss</button>
+              </div></div>
+            <div class="set-row"><div><div class="t">New note background</div><div class="d">You can still change it per note.</div></div>
+              <div class="bgs"><button class="bg" aria-pressed="true" aria-label="Plain"></button><button class="bg paper" aria-label="Warm paper"></button><button class="bg lined" aria-label="Lined"></button><button class="bg grid" aria-label="Grid"></button><button class="bg dots" aria-label="Dotted"></button></div></div>
+
+            <h2>Notes</h2>
+            <div class="set-row"><div><div class="t">Notes folder</div><div class="path">C:\Users\bhavy\Documents\Envelo</div></div><button class="ghost-btn">Change</button></div>
+            <div class="set-row"><div><div class="t">Quick capture shortcut</div><div class="d">Works from any app.</div></div><span class="hint"><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Space</kbd> <button class="ghost-btn">Change</button></span></div>
+            <div class="set-row"><div><div class="t">Start with Windows</div><div class="d">Keeps quick capture ready in the tray.</div></div><span class="toggle" role="switch" aria-checked="true" aria-label="Start with Windows"></span></div>
+
+            <h2>Locked folder</h2>
+            <div class="set-row"><div><div class="t">Password and security question</div><div class="d">Unlock the folder first to change these.</div></div><button class="ghost-btn">Change</button></div>
+            <div class="set-row"><div><div class="t">Lock after</div><div class="d">Also locks when you close Envelo.</div></div>
+              <select class="ghost-btn" aria-label="Lock after"><option>5 minutes idle</option><option>1 minute idle</option><option>15 minutes idle</option></select></div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script>
   lucide.createIcons();
-  document.querySelectorAll('.seg').forEach(seg => {
-    seg.addEventListener('click', e => {
-      const b = e.target.closest('button'); if (!b) return;
-      seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
-      document.documentElement.dataset[seg.dataset.set] = b.dataset.v;
+  const root = document.documentElement;
+  const apply = (key, v) => {
+    root.dataset[key] = v === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : v;
+    document.querySelectorAll(`[data-set="${key}"] button`).forEach(x => x.setAttribute('aria-pressed', x.dataset.v === v));
+  };
+  document.querySelectorAll('[data-set]').forEach(group => {
+    group.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (b) apply(group.dataset.set, b.dataset.v);
     });
   });
 </script>

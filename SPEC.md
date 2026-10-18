@@ -88,10 +88,19 @@ keeps running in the tray so this is instant.
 
 ## Look
 
-- Light and dark mode, following Windows with a manual override.
-- Warm paper light theme, soft warm charcoal dark theme (not pure black).
-- Accent colour: to be chosen from the mockup (ink blue, terracotta, moss).
+- Light and dark mode, following Windows with a manual override (System, Light, Dark).
+- Light: warm paper throughout.
+- Dark: warm grey for the shell (title bar, sidebar, notes list, search) and near-black for the
+  note itself, so the writing area has the most contrast.
+- Accent colour chosen in Settings: Ink blue (default), Terracotta or Moss. Each has a light and
+  a dark variant.
 - Soft rounded rectangles; no pill buttons, no emoji, no decorative animation.
+
+## Settings
+
+- Appearance: theme, accent colour, default background for new notes.
+- Notes: notes folder location, quick capture shortcut, start with Windows (tray).
+- Locked folder: change password and security question (after unlocking), lock after idle time.
 
 ## Shortcuts
 
