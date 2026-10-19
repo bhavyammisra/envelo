@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="design/liquid-glass-dark.png" width="820" alt="Envelo in dark mode: sidebar, notes list and an open note">
+  <img src="design/screenshot-dark.png" width="820" alt="Envelo in dark mode: sidebar, notes list and an open note">
   <br>
   <sub>Design preview with sample notes</sub>
 </p>
@@ -38,6 +38,13 @@ as an ordinary Markdown file you can open in any editor.
   (liquid glass, contour lines, or nothing).
 - **Lives in the tray.** Closing the window keeps Envelo ready, and it can start with Windows so
   quick capture always works.
+
+<p align="center">
+  <img src="design/screenshot-light.png" width="49%" alt="Envelo in light mode">
+  <img src="design/screenshot-capture.png" width="49%" alt="The quick capture box">
+  <br>
+  <sub>Light mode, and the quick capture box (<code>Ctrl+Shift+Space</code>)</sub>
+</p>
 
 ## Install
 
