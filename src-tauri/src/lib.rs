@@ -589,6 +589,8 @@ fn tray(app: &tauri::App) -> tauri::Result<()> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // set before anything starts: the window's page can finish loading before `setup` runs
+    STARTED_HIDDEN.store(std::env::args().any(|a| a == "--hidden"), Ordering::Relaxed);
     let capture_keys = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::Space);
     tauri::Builder::default()
         .manage(vault::Vault::default())
@@ -606,7 +608,6 @@ pub fn run() {
                 .build(),
         )
         .setup(move |app| {
-            STARTED_HIDDEN.store(std::env::args().any(|a| a == "--hidden"), Ordering::Relaxed);
             if let Err(e) = app.global_shortcut().register(capture_keys) {
                 eprintln!("Ctrl+Shift+Space is taken by another app: {e}");
             }
