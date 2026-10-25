@@ -7,6 +7,7 @@
   import './lib/settings.svelte.js'; // same theme and accent as the main window
 
   const win = getCurrentWindow();
+  let title = $state('');
   let text = $state(''); // kept between openings, so a dismissed draft isn't lost
   let saving = $state(false);
   let saved = $state(false);
@@ -22,10 +23,14 @@
       .join('\n\n');
 
   async function save() {
-    if (!text.trim() || saving) return;
+    if ((!text.trim() && !title.trim()) || saving) return;
+    // the first line is the note's title; a bare "#" keeps it empty so the content isn't promoted to title
+    const body = `# ${title.trim()}`.trim() + (text.trim() ? `
+
+${toMarkdown(text)}` : '');
     error = null;
     try {
-      await invoke('save_note', { path: null, body: toMarkdown(text), created: new Date().toISOString() });
+      await invoke('save_note', { path: null, body, created: new Date().toISOString() });
     } catch (e) {
       error = `Couldn't save: ${e}`;
       return;
@@ -34,7 +39,7 @@
     saving = saved = true;
     setTimeout(async () => {
       await win.hide();
-      text = '';
+      text = title = '';
       saving = saved = false;
     }, 1100);
   }
@@ -55,10 +60,11 @@
 <div class="capture-stage">
   <div class="capture" class:saving role="dialog" aria-label="Quick note">
     <div class="capture-head" data-tauri-drag-region><span class="name" data-tauri-drag-region>Envelo</span><span data-tauri-drag-region>New note</span></div>
+    <input class="title" bind:value={title} onkeydown={onKey} aria-label="Title" placeholder="Title (optional)">
     <!-- svelte-ignore a11y_autofocus -->
     <textarea bind:this={box} bind:value={text} onkeydown={onKey} autofocus aria-label="Quick note text" placeholder="A thought, a link, anything"></textarea>
     {#if error}<p class="capture-error" role="alert">{error}</p>{/if}
-    <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Esc</kbd>Close</span></div>
+    <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Shift Tab</kbd>Title</span><span><kbd>Esc</kbd>Close</span></div>
   </div>
   <div class="saved" class:show={saved} role="status"><Check size={16} strokeWidth={1.5} />Saved to Envelo</div>
 </div>

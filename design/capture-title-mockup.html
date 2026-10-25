@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-accent="gold">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick capture with title</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..600&family=Newsreader:opsz,wght@6..72,400..600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/app.css">
+  <style>
+    :root { --serif: "Newsreader", Georgia, serif; --sans: "Instrument Sans", "Segoe UI", sans-serif; }
+    body { padding: 32px 24px 48px; }
+    h1 { font: 500 24px/1.2 var(--serif); margin: 0 0 6px; }
+    p.note { margin: 0 0 28px; color: var(--ink-2); max-width: 640px; }
+    .frame-title { font-size: 13px; color: var(--ink-2); margin: 28px 0 10px; }
+    .desk { margin-bottom: 8px; }
+    .pair { display: grid; gap: 0; }
+    /* proposed: title line above the content */
+    .capture .title { display: block; width: 100%; border: 0; outline: none; background: none;
+      padding: 10px 16px 0; font: 500 22px/1.3 var(--serif); color: var(--ink); caret-color: var(--accent); }
+    .capture .title::placeholder, .capture textarea::placeholder { color: var(--ink-3); }
+    .capture textarea { min-height: 96px; padding-top: 4px; }
+    .dark-desk { background: #1E1E1E; }
+    .caret { display: inline-block; width: 1.5px; height: 1.15em; background: var(--accent); vertical-align: -0.2em; margin-left: 1px; }
+  </style>
+</head>
+<body>
+  <h1>Quick capture, with an optional title</h1>
+  <p class="note">Ctrl+Shift+Space opens this. The cursor starts in the content, so a quick thought is still just type and Enter. Shift+Tab (or a click) moves up to the title. Leave the title empty and the note saves untitled.</p>
+
+  <div class="frame-title">1. Just opened (light)</div>
+  <div class="desk"><div class="ghost"></div>
+    <div class="capture">
+      <div class="capture-head"><span class="name">Envelo</span><span>New note</span></div>
+      <input class="title" placeholder="Title (optional)" aria-label="Title">
+      <textarea placeholder="A thought, a link, anything" aria-label="Note"></textarea>
+      <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Shift Tab</kbd>Title</span><span><kbd>Esc</kbd>Close</span></div>
+    </div>
+  </div>
+
+  <div class="frame-title">2. With a title and content (light)</div>
+  <div class="desk"><div class="ghost"></div>
+    <div class="capture">
+      <div class="capture-head"><span class="name">Envelo</span><span>New note</span></div>
+      <input class="title" value="Portfolio idea" aria-label="Title">
+      <textarea aria-label="Note">https://lukebaffait.fr
+the scroll is so calm, look at how the headings arrive</textarea>
+      <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Shift Tab</kbd>Title</span><span><kbd>Esc</kbd>Close</span></div>
+    </div>
+  </div>
+
+  <div class="frame-title">3. Content only, title left empty (dark)</div>
+  <div data-theme="dark" data-accent="gold" style="color: var(--ink)">
+    <div class="desk dark-desk"><div class="ghost"></div>
+      <div class="capture">
+        <div class="capture-head"><span class="name">Envelo</span><span>New note</span></div>
+        <input class="title" placeholder="Title (optional)" aria-label="Title">
+        <textarea aria-label="Note">call the dentist before friday</textarea>
+        <div class="capture-foot"><span><kbd>Enter</kbd>Save</span><span><kbd>Shift Enter</kbd>New line</span><span><kbd>Shift Tab</kbd>Title</span><span><kbd>Esc</kbd>Close</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

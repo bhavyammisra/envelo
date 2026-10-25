@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { titleOf } from './notes.svelte.js';
+import { titleOf, linesOf } from './notes.svelte.js';
 
 const inTauri = '__TAURI_INTERNALS__' in window;
 const call = (cmd, args) => (inTauri ? invoke(cmd, args) : Promise.reject(new Error('The locked folder only works in the app')));
@@ -10,8 +10,8 @@ export const vault = $state({ exists: false, unlocked: false, question: null, wa
 let nextId = 1;
 const plain = (s) => s.replace(/<[^>]+>/g, '').replace(/[*_~`>#\[\]()!|-]/g, '').replace(/\s+/g, ' ').trim();
 const decorate = (n) => {
-  const lines = n.body.split('\n').map(plain).filter(Boolean);
-  return { ...n, key: nextId++, title: titleOf(n.body), preview: lines.slice(1).join(' ').slice(0, 140), dirty: false, queue: Promise.resolve() };
+  const lines = linesOf(n.body).slice(1).map(plain).filter(Boolean);
+  return { ...n, key: nextId++, title: titleOf(n.body), preview: lines.join(' ').slice(0, 140), dirty: false, queue: Promise.resolve() };
 };
 
 /** Turns "wrong:3" / "wait:60" from the app into words. */

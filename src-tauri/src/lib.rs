@@ -99,9 +99,10 @@ fn join(f: &Front, body: &str) -> String {
 }
 
 fn title_of(body: &str) -> String {
+    // first non-blank line; a bare "#" there means untitled (same rule as titleOf in notes.svelte.js)
     body.lines()
-        .map(|l| l.trim_start_matches('#').trim())
-        .find(|l| !l.is_empty())
+        .find(|l| !l.trim().is_empty())
+        .map(|l| l.trim().trim_start_matches('#').trim())
         .unwrap_or("")
         .to_string()
 }
@@ -679,6 +680,8 @@ mod tests {
     #[test]
     fn titles_and_file_names() {
         assert_eq!(title_of("\n\n## Website ideas\nmore"), "Website ideas");
+        assert_eq!(title_of("#\n\ncall the dentist"), "");
+        assert_eq!(file_stem(&title_of("# \n\ncall the dentist")), "Untitled");
         assert_eq!(file_stem("a/b: c?."), "ab c");
         assert_eq!(file_stem("   "), "Untitled");
     }

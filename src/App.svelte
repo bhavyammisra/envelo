@@ -252,7 +252,7 @@
             {#each g.notes as n (keyOf(n))}
               <button class="row" role="option" aria-selected={keyOf(n) === currentKey} aria-current={keyOf(n) === currentKey} onclick={() => pick(n)}>
                 {#if keyOf(n) === currentKey}{#key keyOf(n)}<div class="topo" aria-hidden="true" style:--pos={patch(n)}></div>{/key}{/if}
-                <div class="row-title">{#if n.pinned}<Pin size={13} strokeWidth={1.5} />{/if}{n.title || 'New note'}</div>
+                <div class="row-title">{#if n.pinned}<Pin size={13} strokeWidth={1.5} />{/if}{n.title || (n.preview ? 'Untitled' : 'New note')}</div>
                 <div class="row-meta"><time>{timeOf(n.modified)}</time><span>{n.preview}</span></div>
               </button>
             {/each}
