@@ -247,9 +247,8 @@ export function groupOf(iso, now = new Date()) {
 
 export function timeOf(iso, now = new Date()) {
   const d = new Date(iso), diff = (startOfDay(now) - startOfDay(d)) / day;
-  if (diff <= 1) return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
-  if (diff < 7) return d.toLocaleDateString('en-GB', { weekday: 'short' });
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: d.getFullYear() === now.getFullYear() ? undefined : '2-digit' });
+  if (diff <= 0) return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: d.getFullYear() === now.getFullYear() ? undefined : 'numeric' }).replace('Sept', 'Sep');
 }
 
 export function stampOf(note) {
